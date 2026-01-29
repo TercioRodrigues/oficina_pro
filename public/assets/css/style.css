@@ -101,6 +101,89 @@ body {
     border-color: rgba(231, 76, 60, 0.5);
 }
 
+.access-denied-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    padding: 50px 40px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    animation: slideIn 0.5s ease-out;
+    margin-left: 35%;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.icon-container {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 30px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.icon-container svg {
+    width: 50px;
+    height: 50px;
+    fill: white;
+}
+
+.access-denied-container h1 {
+    color: #2d3748;
+    font-size: 32px;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.error-code {
+    color: #ff6b6b;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.access-denied-container p {
+    color: #718096;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 /* ========================================
    NAVBAR
    ======================================== */
@@ -209,6 +292,14 @@ header {
     align-items: center;
 }
 
+.header {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
 /* ========================================
    CONTEÚDO PRINCIPAL
    ======================================== */
@@ -289,7 +380,6 @@ h2 {
 
 .stat-icon {
     font-size: 2.5em;
-    opacity: 0.3;
 }
 
 .stat-label {
@@ -383,67 +473,77 @@ tr:hover {
 
 .badge-aberta,
 .badge-agendado,
-.badge-pendente {
-    background: #fff3bf;
-    color: #c69500;
+.badge-pendente,
+.badge-férias {
+    background-color: #FFF9DB;
+    color: #856404;
+    border: 1px solid #FFE066;
 }
 
 .badge-andamento,
 .badge-emandamento,
 .badge-ematendimento,
-.badge-afastado {
-    background: #e3f2fd;
-    color: #1976d2;
+.badge-afastado,
+.badge-info {
+    background-color: #E7F5FF;
+    color: #1971C2;
+    border: 1px solid #A5D8FF;
 }
 
-.badge-concluida,
-.badge-concluído,
+.badge-aguardandopecas {
+    background-color: #F8F0FC;
+    color: #AE3EC9;
+    border: 1px solid #EEBEEB;
+}
+
+.badge-aguardandoaprovacao {
+    background-color: #FFF4E6;
+    color: #D9480F;
+    border: 1px solid #FFD8A8;
+}
+
+.badge-concluido,
 .badge-confirmado,
 .badge-aprovado,
 .badge-entrada,
 .badge-ativo {
-    background: #d3f9d8;
-    color: #2f9e44;
+    background-color: #EBFBEE;
+    color: #2B8A3E;
+    border: 1px solid #B2F2BB;
 }
 
 .badge-recusado,
-.badge-cancelada,
 .badge-cancelado,
 .badge-saida,
 .badge-inativo {
-    background: #ffe0e6;
-    color: #c92a2a;
+    background-color: #FFF5F5;
+    color: #C92A2A;
+    border: 1px solid #FFC9C9;
 }
 
 .badge-expirado {
-    background: #e0e0e0;
-    color: #666;
-}
-
-.badge-férias {
-    background: #fff3bf;
-    color: #c69500;
-}
-
-.badge-info {
-    background: #e3f2fd;
-    color: #1976d2;
-    margin-left: 5px;
+    background-color: #F1F3F5;
+    color: #495057;
+    border: 1px solid #DEE2E6;
 }
 
 .badge-nivel-admin {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #4C6EF5 0%, #7048E8 100%);
+    color: #FFFFFF;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .badge-nivel-gerente {
-    background: #43e97b;
-    color: white;
+    background-color: #087F5B;
+    color: #FFFFFF;
+    font-weight: bold;
 }
 
 .badge-nivel-atendente {
-    background: #4facfe;
-    color: white;
+    background-color: #1C7ED6;
+    color: #FFFFFF;
+    font-weight: bold;
 }
 
 /* ========================================
@@ -580,10 +680,6 @@ tr:hover {
    FORMULÁRIOS
    ======================================== */
 
-.form-group {
-    margin-bottom: 15px;
-}
-
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -660,11 +756,20 @@ tr:hover {
 }
 
 .mensagem {
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 20px;
+    position: fixed;
+    top: 125px;
+    right: 20px;
     background: #43e97b;
     color: white;
+    padding: 16px;
+    border-radius: 8px;
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.hide {
+    opacity: 0;
+    transform: translateX(20px);
+    pointer-events: none;
 }
 
 .info-box {
@@ -828,6 +933,43 @@ tr:hover {
     border-left: 4px solid #2f9e44;
 }
 
+
+/* ==================================
+PÁGINA ORDENS DE SERVIÇO
+================================== */
+
+.filtros-lista-ordens {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ==========================================
+    PÁGINA ITENS DAS ORDENS DE SERVIÇOS
+========================================== */
+
+.os-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.actions-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
 /* ========================================
    RESPONSIVIDADE - TABLET (max-width: 1024px)
    ======================================== */
@@ -899,6 +1041,10 @@ tr:hover {
     td {
         padding: 10px;
         font-size: 0.9em;
+    }
+
+    .access-denied-container {
+        margin-left: 25%;
     }
 }
 
@@ -1116,6 +1262,10 @@ tr:hover {
         font-size: 0.75em;
         padding: 4px 10px;
     }
+
+    .access-denied-container {
+        margin-left: 15%;
+    }
 }
 
 /* ========================================
@@ -1165,5 +1315,21 @@ tr:hover {
     .btn {
         padding: 8px 12px;
         font-size: 0.85em;
+    }
+
+    .access-denied-container {
+        padding: 40px 25px;
+    }
+
+    .access-denied-container h1 {
+        font-size: 26px;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
     }
 }

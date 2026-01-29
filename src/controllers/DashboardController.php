@@ -27,45 +27,53 @@ class DashboardController extends Controller
         $mes_atual = date('Y-m-01');
         $hoje = date('Y-m-d');
         $total_os_mes = Ordens_servico::select()
-            ->addField(new Func('count', 'id'), 'total')
             ->where('data_abertura', '>=', $mes_atual)
-            ->where('data_abertura', '<=', $hoje)->get();
-        $total_os_mes = $total_os_mes[0]['total'];
+            ->where('data_abertura', '<=', $hoje)
+            ->where('empresa_id', $_SESSION['empresa_id'])->count();
 
         $os_andamento = Ordens_servico::select()
-            ->addField(new Func('count', 'id'), 'Em_andamento')
-            ->where('status', 'in', ['Aberta', 'Em Andamento', 'Aguardando Peças'])->get();
-        $os_andamento = $os_andamento[0]['Em_andamento'];
+            ->where('status', 'in', ['Aberta', 'Em_Andamento', 'Aguardando_Pecas'])
+            ->where('empresa_id', $_SESSION['empresa_id'])->count();
 
         $faturamento_mes = Ordens_servico::select()
             ->addField(new Func('sum', 'valor_total'), 'faturamento_mes')
-            ->where('status', 'Concluída')->where('data_abertura', '>=', $mes_atual)
-            ->where('data_abertura', '<=', $hoje)->get();
-        $faturamento_mes = $faturamento_mes[0]['faturamento_mes'];
+            ->where('status', 'Concluido')
+            ->where('pago', 'Sim')
+            ->where('data_abertura', '>=', $mes_atual)
+            ->where('data_abertura', '<=', $hoje)
+            ->where('empresa_id', $_SESSION['empresa_id'])->get();
+        $faturamento_mes = $faturamento_mes[0]['faturamento_mes'] ?? 0;
 
-
-        $estoque_baixo = Estoque::select()
-            ->addField(new Func('count', 'id'), 'estoque_baixo')
-            ->where('quantidade', '<=', 'estoque_minimo')->get();
-        $estoque_baixo = $estoque_baixo[0]['estoque_baixo'];
+        $estoque_baixo = Estoque::estoque_minimo();
 
         $agendamentos_hoje = Agendamentos::select()
-            ->addField(new Func('count', 'id'), 'agendamentos_hoje')
-            ->where('data_agendamento', date('Y-m-d'))
-            ->where('status', 'in', ['Agendado', 'Confirmado'])->get();
-        $agendamentos_hoje = $agendamentos_hoje[0]['agendamentos_hoje'];
+            ->where('data_agendamento', '>=', date('Y-m-d 00:00:00'))
+            ->where('data_agendamento', '<=', date('Y-m-d 23:59:59'))
+            ->where('status', 'in', ['Agendado', 'Confirmado'])
+            ->where('empresa_id', $_SESSION['empresa_id'])->count();
 
         $os_por_status = Ordens_servico::select(['status'])
             ->addField(new Func('count', 'id'), 'total')
             ->where('data_abertura', '>=', $mes_atual)
             ->where('data_abertura', '<=', $hoje)
+            ->where('empresa_id', $_SESSION['empresa_id'])
             ->groupBy('status')->get();
 
 
-        $faturamento_meses = Ordens_servico::select(['data_fechamento'])
+        $faturamento_meses = [];
+        $faturamento = Ordens_servico::select('data_fechamento as mes')
             ->addField(new Func('sum', 'valor_total'), 'total')
-            ->where('status', 'Concluída')
-            ->where('data_fechamento', '>=', date('Y-m-d', strtotime('-6 Month')))->get();
+            ->where('status', 'Concluido')
+            ->where('data_fechamento', '>=', date('Y-m-d', strtotime('-6 Month')))
+            ->where('empresa_id', $_SESSION['empresa_id'])->get();
+
+        foreach ($faturamento as $mes) {
+            $m = $mes['mes'] ?? date('Y-m-d');
+            $faturamento_meses[] = [
+                'mes' => date('m/Y', strtotime($m)),
+                'total' => $mes['total']
+            ];
+        }
 
         $ultimas_os = Ordens_servico::select([
             'ordens_servico.id',
@@ -77,6 +85,7 @@ class DashboardController extends Controller
         ])
             ->join('clientes', 'ordens_servico.cliente_id', '=', 'clientes.id')
             ->join('veiculos', 'ordens_servico.veiculo_id', '=', 'veiculos.id')
+            ->where('ordens_servico.empresa_id', $_SESSION['empresa_id'])
             ->orderBy(['ordens_servico.data_abertura' => 'DESC'])->limit(5)->get();
 
         $proximos_agendamentos = Agendamentos::select([
@@ -93,6 +102,7 @@ class DashboardController extends Controller
             ->join('veiculos', 'agendamentos.veiculo_id', '=', 'veiculos.id')
             ->where('agendamentos.data_agendamento', '>=', date('Y-m-d'))
             ->where('agendamentos.status', 'in', ['Agendado', 'Confirmado'])
+            ->where('agendamentos.empresa_id', $_SESSION['empresa_id'])
             ->orderBy('agendamentos.data_agendamento')->limit(5)->get();
 
 

@@ -1,13 +1,19 @@
 <?= $render('header') ?>
+<?php if (!empty($mensagem)): ?>
+    <div id="aviso" class="mensagem hide"><?= $mensagem ?></div>
+    <script>
+        const aviso = document.getElementById('aviso');
+        aviso.classList.remove('hide');
 
+        setTimeout(() => {
+            aviso.classList.add('hide');
+        }, 5000);
+    </script>
+<?php endif; ?>
 <div class="page-header">
     <h1>📝 Gestão de Orçamentos</h1>
     <p class="breadcrumb">Dashboard / Orçamentos</p>
 </div>
-
-<?php if (!empty($mensagem)): ?>
-    <div class="alert alert-success"><?= $mensagem ?></div>
-<?php endif; ?>
 
 <div class="card">
     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -15,12 +21,16 @@
             <h2 style="margin: 0;">Lista de Orçamentos</h2>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <div class="filtros">
-                <a href="?status=Pendente" class="btn-filtro <?= $status_filtro === 'Pendente' ? 'active' : '' ?>">Pendentes</a>
-                <a href="?status=Aprovado" class="btn-filtro <?= $status_filtro === 'Aprovado' ? 'active' : '' ?>">Aprovados</a>
-                <a href="?status=Recusado" class="btn-filtro <?= $status_filtro === 'Recusado' ? 'active' : '' ?>">Recusados</a>
-                <a href="?status=Todos" class="btn-filtro <?= $status_filtro === 'Todos' ? 'active' : '' ?>">Todos</a>
-            </div>
+            <!-- <div class="filtros">
+                <a href="?status=Pendente" class="btn-filtro <?php //$status_filtro === 'Pendente' ? 'active' : '' 
+                                                                ?>">Pendentes</a>
+                <a href="?status=Aprovado" class="btn-filtro <?php //$status_filtro === 'Aprovado' ? 'active' : '' 
+                                                                ?>">Aprovados</a>
+                <a href="?status=Recusado" class="btn-filtro <?php //$status_filtro === 'Recusado' ? 'active' : '' 
+                                                                ?>">Recusados</a>
+                <a href="?status=Todos" class="btn-filtro <?php //$status_filtro === 'Todos' ? 'active' : '' 
+                                                            ?>">Todos</a>
+            </div> -->
             <button class="btn btn-primary" onclick="abrirModal()">+ Novo Orçamento</button>
         </div>
     </div>
@@ -36,14 +46,14 @@
                     <th>Veículo</th>
                     <th>Valor</th>
                     <th>Validade</th>
-                    <th>Status</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($orcamentos as $orc):
                     $dias_validade = (strtotime($orc['data_validade']) - time()) / 86400;
                 ?>
-                    <tr style="cursor:pointer;" onclick="window.location='orcamentos/itens?orcamento_id=<?= $orc['id'] ?>';">
+                    <tr style="cursor:pointer;" ondblclick="window.location='orcamentos/itens?orcamento_id=<?= $orc['id'] ?>';">
                         <td><strong>#<?= str_pad($orc['id'], 4, '0', STR_PAD_LEFT) ?></strong></td>
                         <td><?= date('d/m/Y', strtotime($orc['data_orcamento'])) ?></td>
                         <td><?= htmlspecialchars($orc['cliente_nome']) ?></td>
@@ -59,9 +69,11 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <span class="badge badge-<?= strtolower($orc['status']) ?>">
-                                <?= $orc['status'] ?>
-                            </span>
+                            <form method="POST" style="display: inline;" action="/orcamentos/processar" onsubmit="return confirm('Excluir este orçamento?')">
+                                <input type="hidden" name="acao" value="excluir">
+                                <input type="hidden" name="orcamento_id" value="<?= $orc['id'] ?>">
+                                <button type="submit" class="btn btn-sm btn-danger">🗑️ Excluir</button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -75,95 +87,140 @@
     </div>
 </div>
 
-<!-- Modal -->
 <div id="modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Novo Orçamento</h2>
+    <div class="modal-content" style="max-width: 900px; padding: 15px;">
+
+        <div class="modal-header" style="padding-bottom: 8px; margin-bottom: 10px;">
+            <h2 style="font-size: 18px;">Novo Orçamento</h2>
             <button onclick="fecharModal()" class="btn-close">×</button>
         </div>
 
-        <form method="POST" action="orcamentos/processar">
+        <form method="POST" action="/orcamentos/processar">
             <input type="hidden" name="acao" value="cadastrar">
 
-            <h3 style="color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0;">👤 Dados do Cliente</h3>
-            <div class="form-grid">
+            <!-- CLIENTE -->
+            <h3 style="font-size:14px;margin:10px 0 8px;border-bottom:1px solid #eee;">👤 Dados do Cliente</h3>
+
+            <div class="form-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
                 <div class="form-group">
-                    <label>Nome: *</label>
-                    <input type="text" name="cliente_nome" required>
+                    <label>Nome *</label>
+                    <input type="text" name="cliente_nome" id="cliente_nome" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Telefone: *</label>
+                    <label>Telefone *</label>
                     <input type="text" name="cliente_telefone" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Email:</label>
+                    <label>Email</label>
                     <input type="email" name="cliente_email">
                 </div>
             </div>
 
-            <h3 style="color: #2c3e50; margin: 20px 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0;">🚗 Dados do Veículo</h3>
-            <div class="form-grid">
+            <!-- VEÍCULO -->
+            <h3 style="font-size:14px;margin:12px 0 8px;border-bottom:1px solid #eee;">🚗 Dados do Veículo</h3>
+
+            <div class="form-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
                 <div class="form-group">
-                    <label>Marca: *</label>
-                    <input type="text" name="veiculo_marca" required>
+                    <label>Marca *</label>
+                    <select name="veiculo_marca">
+                        <option value="">Selecione uma marca</option>
+                        <option value="Audi">Audi</option>
+                        <option value="Bmw">BMW</option>
+                        <option value="Byd">BYD</option>
+                        <option value="Chery">Chery</option>
+                        <option value="Chevrolet">Chevrolet</option>
+                        <option value="Citroen">Citroën</option>
+                        <option value="Dodge">Dodge</option>
+                        <option value="Ferrari">Ferrari</option>
+                        <option value="Fiat">Fiat</option>
+                        <option value="Ford">Ford</option>
+                        <option value="Gwm">GWM</option>
+                        <option value="Honda">Honda</option>
+                        <option value="Hyundai">Hyundai</option>
+                        <option value="Jac">JAC</option>
+                        <option value="Jeep">Jeep</option>
+                        <option value="Kia">Kia</option>
+                        <option value="Land-rover">Land Rover</option>
+                        <option value="Lexus">Lexus</option>
+                        <option value="Mercedes-benz">Mercedes-Benz</option>
+                        <option value="Mitsubishi">Mitsubishi</option>
+                        <option value="Nissan">Nissan</option>
+                        <option value="Peugeot">Peugeot</option>
+                        <option value="Porsche">Porsche</option>
+                        <option value="Ram">RAM</option>
+                        <option value="Renault">Renault</option>
+                        <option value="Subaru">Subaru</option>
+                        <option value="Suzuki">Suzuki</option>
+                        <option value="Toyota">Toyota</option>
+                        <option value="Volkswagen">Volkswagen</option>
+                        <option value="Volvo">Volvo</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Modelo: *</label>
+                    <label>Modelo *</label>
                     <input type="text" name="veiculo_modelo" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Ano: *</label>
-                    <input type="text" name="veiculo_ano" required maxlength="4">
+                    <label>Ano *</label>
+                    <input type="text" name="veiculo_ano" maxlength="4" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Placa:</label>
-                    <input type="text" name="veiculo_placa">
+                    <label>Placa</label>
+                    <input type="text" name="veiculo_placa" id="veiculo_placa">
                 </div>
             </div>
 
-            <h3 style="color: #2c3e50; margin: 20px 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0;">📋 Informações do Orçamento</h3>
+            <!-- ORÇAMENTO -->
+            <h3 style="font-size:14px;margin:12px 0 8px;border-bottom:1px solid #eee;">📋 Informações do Orçamento</h3>
 
             <div class="form-group">
-                <label>Descrição do Serviço: *</label>
-                <textarea name="descricao_servico" rows="3" required placeholder="Ex: Troca de pastilhas de freio, revisão dos 10 mil km..."></textarea>
+                <label>Descrição do Serviço *</label>
+                <textarea name="descricao_servico" rows="2" required></textarea>
             </div>
 
-            <div class="form-grid">
+            <div class="form-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
                 <div class="form-group">
-                    <label>Data do Orçamento: *</label>
+                    <label>Data *</label>
                     <input type="date" name="data_orcamento" value="<?= date('Y-m-d') ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Validade (dias): *</label>
+                    <label>Validade (dias)</label>
                     <input type="number" name="validade_dias" value="7" min="1" required>
-                    <small style="color: #7f8c8d;">Padrão: 7 dias</small>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Observações:</label>
+                <label>Observações</label>
                 <textarea name="observacoes" rows="2"></textarea>
             </div>
 
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Criar e Adicionar Itens →</button>
+            <!-- FOOTER -->
+            <div class="modal-footer" style="margin-top:10px;padding-top:8px;">
+                <button type="submit" class="btn btn-primary">Criar Orçamento</button>
                 <button type="button" class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
             </div>
+
         </form>
     </div>
 </div>
 
 
+
 <script>
     function abrirModal() {
         document.getElementById('modal').style.display = 'block';
+        document.getElementById('cliente_nome').autofocus = true;
+
+        const placa = document.getElementById('veiculo_placa');
+        placa.addEventListener('input', () => {
+            placa.value = placa.value.toUpperCase();
+        });
     }
 
     function fecharModal() {

@@ -1,7 +1,7 @@
 <?= $render('header') ?>
 <div class="page-header">
     <h1>Dashboard</h1>
-    <p class="breadcrumb">Início / Dashboard</p>
+    <p class="breadcrumb">Dashboard</p>
 </div>
 
 <!-- Estatísticas -->
@@ -26,15 +26,17 @@
         </div>
     </div>
 
-    <div class="stat-card success">
-        <div class="stat-header">
-            <div>
-                <div class="stat-label">Faturamento Mês</div>
-                <div class="stat-value" style="font-size: 1.5em;">R$ <?= number_format($faturamento_mes, 2, ',', '.') ?></div>
+    <?php if ($_SESSION['usuario_nivel'] == 'Admin' || $_SESSION['usuario_nivel'] == 'Gerente'): ?>
+        <div class="stat-card success">
+            <div class="stat-header">
+                <div>
+                    <div class="stat-label">Faturamento Mês</div>
+                    <div class="stat-value" style="font-size: 1.5em;">R$ <?= number_format($faturamento_mes, 2, ',', '.') ?></div>
+                </div>
+                <div class="stat-icon">💰</div>
             </div>
-            <div class="stat-icon">💰</div>
         </div>
-    </div>
+    <?php endif; ?>
 
     <div class="stat-card danger">
         <div class="stat-header">
@@ -65,13 +67,14 @@
             <canvas id="chartStatus"></canvas>
         </div>
     </div>
-
-    <div class="card">
-        <h2>Faturamento (Últimos 6 Meses)</h2>
-        <div class="chart-container">
-            <canvas id="chartFaturamento"></canvas>
+    <?php if ($_SESSION['usuario_nivel'] == 'Admin' || $_SESSION['usuario_nivel'] == 'Gerente'): ?>
+        <div class="card">
+            <h2>Faturamento (Últimos 6 Meses)</h2>
+            <div class="chart-container">
+                <canvas id="chartFaturamento"></canvas>
+            </div>
         </div>
-    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Últimas OS -->
@@ -97,8 +100,28 @@
                     <td><strong><?= str_pad($os['id'], 5, '0', STR_PAD_LEFT) ?></strong></td>
                     <td><?= htmlspecialchars($os['cliente_nome']) ?></td>
                     <td><?= htmlspecialchars($os['placa']) ?></td>
-                    <td><?= $os['data_abertura'] ?></td>
-                    <td><span class="badge badge-<?= strtolower(str_replace(' ', '', $os['status'])) ?>"><?= $os['status'] ?></span></td>
+                    <td><?= date('d/m/Y', strtotime($os['data_abertura'])) ?></td>
+                    <?php if ($os['status'] === 'Em_Andamento') {
+                        $class = 'badge-andamento';
+                        $status = 'Em Andamento';
+                    } elseif ($os['status'] === 'Aberta') {
+                        $class = 'badge-aberto';
+                        $status = 'Aberta';
+                    } elseif ($os['status'] === 'Concluido') {
+                        $class = 'badge-concluido';
+                        $status = 'Concluído';
+                    } elseif ($os['status'] === 'Aguardando_Aprovacao') {
+                        $class = 'badge-aguardandoaprovacao';
+                        $status = 'Aguardando Aprovação';
+                    } elseif ($os['status'] === 'Aguardando_Pecas') {
+                        $class = 'badge-aguardandopecas';
+                        $status = 'Aguardando Peças';
+                    } elseif ($os['status'] === 'Cancelado') {
+                        $class = 'badge-cancelado';
+                        $status = $os['status'];
+                    }
+                    ?>
+                    <td><span class="badge <?= $class ?>"><?= $status ?></span></td>
                     <td><strong>R$ <?= number_format($os['valor_total'], 2, ',', '.') ?></strong></td>
                 </tr>
             <?php endforeach; ?>
@@ -125,7 +148,7 @@
         <tbody>
             <?php foreach ($proximos_agendamentos as $ag): ?>
                 <tr>
-                    <td><strong><?= $ag['data_agendamento'] ?></strong></td>
+                    <td><strong><?= date('d/m/Y', strtotime($ag['data_agendamento'])) ?></strong></td>
                     <td><?= htmlspecialchars($ag['cliente_nome']) ?></td>
                     <td><?= htmlspecialchars($ag['marca'] . ' ' . $ag['modelo'] . ' - ' . $ag['placa']) ?></td>
                     <td><?= htmlspecialchars($ag['servico_solicitado']) ?></td>

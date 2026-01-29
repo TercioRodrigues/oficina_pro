@@ -5,4 +5,4 @@ namespace src\models;
 use \core\Model;
 
 
-class Configuracoes extends Model {}
+class Empresas extends Model {}

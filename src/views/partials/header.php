@@ -1,5 +1,7 @@
 <?php
 $pagina_atual = $_SERVER['REQUEST_URI'];
+$pagina_atual = str_replace('/', '', $pagina_atual);
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -7,10 +9,9 @@ $pagina_atual = $_SERVER['REQUEST_URI'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Oficina Pro</title>
+    <title><?= $_SESSION['empresa_nome'] ?></title>
+    <link rel="stylesheet" href="/assets/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="/assets/css/style.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -19,7 +20,7 @@ $pagina_atual = $_SERVER['REQUEST_URI'];
     <div class="topbar">
         <a href="/" class="topbar-brand">
             <span>🔧</span>
-            <span>Oficina do Galego</span>
+            <span><?= $_SESSION['empresa_nome'] ?></span>
         </a>
 
         <div class="topbar-right">
@@ -57,7 +58,7 @@ $pagina_atual = $_SERVER['REQUEST_URI'];
                             <span class="dropdown-icon">📝</span>
                             <span>Orçamentos</span>
                         </a></li>
-                    <li><a href="/ordens" class="dropdown-item <?= $pagina_atual === 'ordens' || $pagina_atual === 'os_itens' ? 'active' : '' ?>">
+                    <li><a href="/Os" class="dropdown-item <?= $pagina_atual === 'Os' || $pagina_atual === "Ositens?os_id=" . substr($pagina_atual, strpos($pagina_atual, '=') + 1, strlen($pagina_atual)) ? 'active' : '' ?>">
                             <span class="dropdown-icon">📋</span>
                             <span>Ordens de Serviço</span>
                         </a></li>
@@ -65,7 +66,7 @@ $pagina_atual = $_SERVER['REQUEST_URI'];
                             <span class="dropdown-icon">📅</span>
                             <span>Agendamentos</span>
                         </a></li>
-                    <li><a href="/garantias" class="dropdown-item <?= $pagina_atual === 'garantias' ? 'active' : '' ?>">
+                    <li><a href="/garantias" class="dropdown-item <?= $pagina_atual === 'garantias' || $pagina_atual === "garantias?status=" . substr($pagina_atual, strpos($pagina_atual, '=') + 1, strlen($pagina_atual)) ? 'active' : '' ?>">
                             <span class="dropdown-icon">🛡️</span>
                             <span>Garantias</span>
                         </a></li>
@@ -137,21 +138,25 @@ $pagina_atual = $_SERVER['REQUEST_URI'];
                     <span style="margin-left: 5px;">▼</span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="/configuracoes" class="dropdown-item <?= $pagina_atual === 'configuracoes' ? 'active' : '' ?>">
+                    <li>
+                        <a href="/configuracoes" class="dropdown-item <?= $pagina_atual === 'configuracoes' ? 'active' : '' ?>">
                             <span class="dropdown-icon">🏢</span>
                             <span>Empresa</span>
-                        </a></li>
-                    <?php if ($_SESSION['usuario_nivel'] === 'Admin'): ?>
-                        <li><a href="/usuarios" class="dropdown-item <?= $pagina_atual === 'usuarios' ? 'active' : '' ?>">
-                                <span class="dropdown-icon">🔐</span>
-                                <span>Usuários</span>
-                            </a></li>
-                    <?php endif; ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/usuarios" class="dropdown-item <?= $pagina_atual === 'usuarios' ? 'active' : '' ?>">
+                            <span class="dropdown-icon">🔐</span>
+                            <span>Usuários</span>
+                        </a>
+                    </li>
                     <li class="dropdown-divider"></li>
-                    <li><a href="/painel" class="dropdown-item" target="_blank">
+                    <li>
+                        <a href="#" class="dropdown-item" onclick="window.open('/painel', '', 'fullscreen=yes')">
                             <span class="dropdown-icon">📺</span>
                             <span>Painel Cliente</span>
-                        </a></li>
+                        </a>
+                    </li>
                 </ul>
             </li>
         </ul>

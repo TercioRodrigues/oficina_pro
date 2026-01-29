@@ -4,6 +4,7 @@ namespace src\models;
 
 use \core\Model;
 use src\models\Usuarios;
+use src\models\Empresas;
 
 class Login extends Model
 {
@@ -27,6 +28,12 @@ class Login extends Model
                 $_SESSION['usuario_nome'] = $usuario[0]['nome'];
                 $_SESSION['usuario_nivel'] = $usuario[0]['nivel'];
                 $_SESSION['usuario_email'] = $usuario[0]['email'];
+                $_SESSION['empresa_id'] = $usuario[0]['empresa_id'];
+
+                $empresa = Empresas::select(['nome_fantasia'])->where('id', $usuario[0]['empresa_id'])->get();
+                $_SESSION['empresa_nome'] = $empresa[0]['nome_fantasia'];
+
+                Usuarios::update()->set('ultimo_acesso', date('Y-m-d H:i:s'))->where('id', $usuario[0]['id'])->execute();
                 $resultado = true;
             }
         }
