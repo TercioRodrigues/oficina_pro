@@ -18,6 +18,7 @@ use src\models\Veiculos;
 use src\models\Ordens_servico;
 use src\models\Os_itens_produtos;
 use src\models\Os_itens_servicos;
+use src\models\Agendamentos;
 
 class OrcamentosController extends Controller
 {
@@ -53,9 +54,6 @@ class OrcamentosController extends Controller
             ->where('status', 'Pendente')
             ->where('orcamentos.empresa_id', $_SESSION['empresa_id'])
             ->orderBy('orcamentos.data_orcamento', 'DESC')->get();
-
-
-
 
         $this->render('orcamentos', [
             'orcamentos' => $orcamentos,
@@ -152,7 +150,6 @@ class OrcamentosController extends Controller
             $cliente_endereco = filter_input(INPUT_POST, 'cliente_endereco');
             $veiculo_marca = filter_input(INPUT_POST, 'veiculo_marca');
             $veiculo_modelo = filter_input(INPUT_POST, 'veiculo_modelo');
-            $veiculo_id = filter_input(INPUT_POST, 'veiculo_id');
             $veiculo_ano = filter_input(INPUT_POST, 'veiculo_ano');
             $veiculo_placa = filter_input(INPUT_POST, 'veiculo_placa');
             $veiculo_km = filter_input(INPUT_POST, 'veiculo_km');
@@ -292,23 +289,23 @@ class OrcamentosController extends Controller
 
                             Veiculos::update([
                                 'cliente_id' => $cliente_id,
-                                'placa' => $veiculo_placa,
                                 'marca' => $veiculo_marca,
                                 'modelo' => $veiculo_modelo,
                                 'ano' => $veiculo_ano,
                                 'km_atual' => $veiculo_km
                             ])->where('id', $placa[0]['id'])->execute();
+                            $veiculo_id = $placa[0]['id'];
+                        } else {
+                            $veiculo_id = Veiculos::insert([
+                                'cliente_id' => $cliente_id,
+                                'placa' => $veiculo_placa,
+                                'marca' => $veiculo_marca,
+                                'modelo' => $veiculo_modelo,
+                                'ano' => $veiculo_ano,
+                                'km_atual' => $veiculo_km,
+                                'empresa_id' => $_SESSION['empresa_id']
+                            ])->execute();
                         }
-
-                        $veiculo_id = Veiculos::insert([
-                            'cliente_id' => $cliente_id,
-                            'placa' => $veiculo_placa,
-                            'marca' => $veiculo_marca,
-                            'modelo' => $veiculo_modelo,
-                            'ano' => $veiculo_ano,
-                            'km_atual' => $veiculo_km,
-                            'empresa_id' => $_SESSION['empresa_id']
-                        ])->execute();
 
                         $os_id = Ordens_servico::insert([
                             'cliente_id' => $cliente_id,
@@ -369,6 +366,8 @@ class OrcamentosController extends Controller
                         $placa = Veiculos::select(['id', 'placa'])
                             ->where('empresa_id', $_SESSION['empresa_id'])
                             ->where('placa', $veiculo_placa)->get();
+
+
                         if (count($placa) > 0) {
 
                             Veiculos::update([
@@ -379,17 +378,18 @@ class OrcamentosController extends Controller
                                 'ano' => $veiculo_ano,
                                 'km_atual' => $veiculo_km
                             ])->where('id', $placa[0]['id'])->execute();
+                            $veiculo_id = $placa[0]['id'];
+                        } else {
+                            $veiculo_id = Veiculos::insert([
+                                'cliente_id' => $cliente_id,
+                                'placa' => $veiculo_placa,
+                                'marca' => $veiculo_marca,
+                                'modelo' => $veiculo_modelo,
+                                'ano' => $veiculo_ano,
+                                'km_atual' => $veiculo_km,
+                                'empresa_id' => $_SESSION['empresa_id']
+                            ])->execute();
                         }
-
-                        $veiculo_id = Veiculos::insert([
-                            'cliente_id' => $cliente_id,
-                            'placa' => $veiculo_placa,
-                            'marca' => $veiculo_marca,
-                            'modelo' => $veiculo_modelo,
-                            'ano' => $veiculo_ano,
-                            'km_atual' => $veiculo_km,
-                            'empresa_id' => $_SESSION['empresa_id']
-                        ])->execute();
 
                         $os_id = Ordens_servico::insert([
                             'cliente_id' => $cliente_id,
@@ -441,6 +441,18 @@ class OrcamentosController extends Controller
                     $this->redirect("/Os?msg=$mensagem");
                     exit;
                 }
+            } elseif ($acao == 'Agendar') {
+
+                /* Agendamentos::insert([
+                    'data_agendamento' => $data_agendamento,
+                    'servico_solicitado' => $servico_solicitado,
+                    'observacoes' => $observacoes,
+                    'usuario_id' => $_SESSION['usuario_id'],
+                    'empresa_id' => $_SESSION['empresa_id']
+                ])->execute();
+                $mensagem = "Agendamento criado com sucesso!";
+                $this->redirect("/agendamentos?filtro={$filtro}&msg={$mensagem}");
+                exit; */
             }
         }
     }

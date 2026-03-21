@@ -53,7 +53,7 @@
                 <?php foreach ($orcamentos as $orc):
                     $dias_validade = (strtotime($orc['data_validade']) - time()) / 86400;
                 ?>
-                    <tr style="cursor:pointer;" ondblclick="window.location='orcamentos/itens?orcamento_id=<?= $orc['id'] ?>';">
+                    <tr style="cursor:pointer;" onclick="window.location='orcamentos/itens?orcamento_id=<?= $orc['id'] ?>';">
                         <td><strong>#<?= str_pad($orc['id'], 4, '0', STR_PAD_LEFT) ?></strong></td>
                         <td><?= date('d/m/Y', strtotime($orc['data_orcamento'])) ?></td>
                         <td><?= htmlspecialchars($orc['cliente_nome']) ?></td>

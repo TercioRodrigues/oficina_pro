@@ -245,7 +245,6 @@
             <input type="hidden" name="acao" id="acao" value="criarOs">
             <input type="hidden" name="orcamento_id" value="<?= $orcamento['id'] ?>">
             <input type="hidden" name="cliente_id" id="cliente_id" value="">
-            <input type="hidden" name="veiculo_id" id="veiculo_id" value="">
             <input type="hidden" name="cliente_novo" id="cliente_novo" value="Sim">
 
             <!-- CLIENTE -->
@@ -380,7 +379,7 @@
     }
 
     function criarOs(user) {
-        console.log(user);
+
         const input_cpf = document.getElementById('cliente_cpf');
         var cpf = '';
 

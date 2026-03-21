@@ -320,31 +320,33 @@
     const btn_mudarStatus = document.getElementById('mudar_status');
 
     status.value = os_status;
+    if (btn_editar) {
+        btn_editar.addEventListener('click', () => {
+            btn_editar.style.display = 'none';
+            btn_salvar.style.display = 'inline-block';
+            btn_cancelar.style.display = 'inline-block';
 
-    btn_editar.addEventListener('click', () => {
-        btn_editar.style.display = 'none';
-        btn_salvar.style.display = 'inline-block';
-        btn_cancelar.style.display = 'inline-block';
+            descricao_problema.readOnly = false;
+            descricao_problema.style.background = 'aliceblue';
 
-        descricao_problema.readOnly = false;
-        descricao_problema.style.background = 'aliceblue';
+            observacoes.readOnly = false;
+            observacoes.style.background = 'aliceblue';
 
-        observacoes.readOnly = false;
-        observacoes.style.background = 'aliceblue';
+        });
+    }
+    if (btn_cancelar) {
+        btn_cancelar.addEventListener('click', () => {
+            btn_salvar.style.display = 'none';
+            btn_cancelar.style.display = 'none';
+            btn_editar.style.display = 'inline-block';
 
-    });
+            descricao_problema.readOnly = true;
+            descricao_problema.style.background = 'white';
 
-    btn_cancelar.addEventListener('click', () => {
-        btn_salvar.style.display = 'none';
-        btn_cancelar.style.display = 'none';
-        btn_editar.style.display = 'inline-block';
-
-        descricao_problema.readOnly = true;
-        descricao_problema.style.background = 'white';
-
-        observacoes.readOnly = true;
-        observacoes.style.background = 'white';
-    });
+            observacoes.readOnly = true;
+            observacoes.style.background = 'white';
+        });
+    }
 
     status.addEventListener('change', () => {
 
