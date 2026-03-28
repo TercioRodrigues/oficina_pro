@@ -81,7 +81,7 @@
 <div class="card">
     <div class="card-header">
         <h2>Últimas Ordens de Serviço</h2>
-        <a href="/ordens" class="btn btn-primary">Ver Todas →</a>
+        <a href="/Os" class="btn btn-primary">Ver Todas →</a>
     </div>
     <table>
         <thead>

@@ -112,6 +112,16 @@
                         <?php endforeach; ?>
                     </select>
                 </div>
+
+                <div class="form-group">
+                    <label for="km_atual">Km Atual*</label>
+                    <input type="text" name="km" id="km_atual">
+                </div>
+
+                <div class="form-group">
+                    <label for="mecanico">Mecânico*</label>
+                    <input type="text" id="mecanico" name="mecanico">
+                </div>
             </div>
 
             <div class="form-row">

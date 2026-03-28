@@ -7,6 +7,9 @@ use Exception;
 use \src\models\Login;
 use src\models\Veiculos;
 use src\models\Clientes;
+use src\models\Ordens_servico;
+use src\models\Os_itens_produtos;
+use src\models\Os_itens_servicos;
 
 class VeiculosController extends Controller
 {
@@ -50,7 +53,40 @@ class VeiculosController extends Controller
 
     public function historico($id = [])
     {
-        $this->render('historico_veiculo', []);
+        $veiculo = Veiculos::select([
+            'placa',
+            'marca',
+            'modelo',
+            'ano',
+            'cor',
+            'chassi',
+            'km_atual',
+            'clientes.nome as cliente_nome'
+        ])
+            ->join('clientes', 'veiculos.cliente_id', '=', 'clientes.id')
+            ->where('veiculos.id', $id['id'])->get();
+
+        $historicos = Ordens_servico::select()->where('veiculo_id', $id['id'])->orderBy('data_abertura', 'DESC')->get();
+        $veiculo[0]['total_visitas'] = count($historicos);
+        $veiculo[0]['valor_total'] = array_sum(array_map('floatval', array_column($historicos, 'valor_total')));
+        $veiculo[0]['historico'] = [];
+
+        if (count($historicos) > 0) {
+            foreach ($historicos as $index => $historico) {
+                $veiculo[0]['historico'][$index] = $historico ?? [];
+
+                $veiculo[0]['historico'][$index]['servicos'][] = Os_itens_produtos::select(['descricao'])
+                    ->join('estoque', 'os_itens_produtos.produto_id', '=', 'estoque.id')
+                    ->where('os_id', $historico['id'])->get();
+
+
+                $veiculo[0]['historico'][$index]['servicos'][] = Os_itens_servicos::select(['nome'])
+                    ->join('servicos', 'os_itens_servicos.servico_id', '=', 'servicos.id')
+                    ->where('os_id', $historico['id'])->get();
+            }
+        }
+
+        $this->render('historico_veiculo', ['veiculo' => $veiculo[0]]);
     }
 
     public function ProcessarAcoes()

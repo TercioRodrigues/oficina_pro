@@ -68,7 +68,7 @@
                                 <br><small style="color: #7f8c8d;">(<?= floor($dias_validade) ?> dias)</small>
                             <?php endif; ?>
                         </td>
-                        <td>
+                        <td onclick="event.stopPropagation();">
                             <form method="POST" style="display: inline;" action="/orcamentos/processar" onsubmit="return confirm('Excluir este orçamento?')">
                                 <input type="hidden" name="acao" value="excluir">
                                 <input type="hidden" name="orcamento_id" value="<?= $orc['id'] ?>">

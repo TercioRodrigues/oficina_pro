@@ -166,6 +166,8 @@ class OsController extends Controller
             $desconto = filter_input(INPUT_POST, 'desconto') ?? 0;
             $forma_pagamento = filter_input(INPUT_POST, 'forma_pagamento');
             $agendamento_id = filter_input(INPUT_POST, 'agendamento_id');
+            $mecanico = filter_input(INPUT_POST, 'mecanico');
+            $km_atual = filter_input(INPUT_POST, 'km');
 
 
             if ($acao === 'cadastrar') {
@@ -179,8 +181,12 @@ class OsController extends Controller
                     'observacoes' => $obsercacoes,
                     'valor_total' => $valor_total,
                     'usuario_id' => $_SESSION['usuario_id'],
-                    'empresa_id' => $_SESSION['empresa_id']
+                    'empresa_id' => $_SESSION['empresa_id'],
+                    'mecanico_nome' => $mecanico,
+                    'km_veiculo' => $km_atual
                 ])->execute();
+
+                Veiculos::update(['km_atual' => $km_atual])->where('id', $veiculo_id)->execute();
 
                 $mensagem = "Ordem de serviço cadastrada com sucesso!";
 
