@@ -225,4 +225,4 @@
         }
     });
 </script>
-<?= $render('header') ?>
+<?= $render('footer') ?>

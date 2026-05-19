@@ -110,14 +110,21 @@
             <input type="hidden" name="os_id" value="<?= $os['id'] ?>">
             <div class="form-group" style="flex: 2;">
                 <label>Produto:</label>
-                <select name="produto_id" required>
-                    <option value="">Selecione um produto</option>
-                    <?php foreach ($produtos as $p): ?>
-                        <option value="<?= $p['id'] ?>">
-                            <?= htmlspecialchars($p['descricao']) ?> - R$ <?= number_format($p['preco_venda'], 2, ',', '.') ?> (Estoque: <?= $p['quantidade'] ?>)
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <div class="busca-produto">
+                    <input type="text"
+                        id="buscar-produto"
+                        placeholder="Buscar peça por nome ou código"
+                        autocomplete="off">
+
+                    <input type="hidden"
+                        name="produto_id"
+                        id="produto_id"
+                        required>
+
+                    <div id="resultados-produto"
+                        class="resultados-produto"
+                        style="display:none;"></div>
+                </div>
             </div>
             <div class="form-group">
                 <label>Quantidade:</label>
@@ -355,6 +362,74 @@
         } else {
             btn_mudarStatus.style.display = 'none';
         }
+
+    });
+
+    const produtos = <?= json_encode($produtos) ?>;
+
+    const buscaProduto = document.getElementById('buscar-produto');
+    const resultadosProduto = document.getElementById('resultados-produto');
+    const produtoId = document.getElementById('produto_id');
+
+    buscaProduto.addEventListener('input', () => {
+
+        const termo = buscaProduto.value.toLowerCase();
+
+        resultadosProduto.innerHTML = '';
+
+        if (termo.length < 1) {
+            resultadosProduto.style.display = 'none';
+            return;
+        }
+
+        const filtrados = produtos.filter(p =>
+            p.descricao.toLowerCase().includes(termo) ||
+            p.codigo.toLowerCase().includes(termo)
+        );
+
+        if (filtrados.length === 0) {
+            resultadosProduto.style.display = 'none';
+            return;
+        }
+
+        resultadosProduto.style.display = 'block';
+
+        filtrados.forEach(p => {
+
+            const div = document.createElement('div');
+
+            div.className = 'item-produto-busca';
+
+            div.innerHTML = `
+            ${p.foto 
+        ? `<img src="/${p.foto}">` 
+        : '<span class="sem-foto-emoji">📦</span>'
+    }
+
+    <div class="produto-info">
+        <strong>${p.descricao}</strong>
+
+        <span class="produto-codigo">
+            Código: ${p.codigo}
+        </span>
+
+        <span class="produto-estoque">
+            Estoque: ${p.quantidade}
+        </span>
+    </div>
+        `;
+
+            div.onclick = () => {
+
+                buscaProduto.value = p.descricao;
+                produtoId.value = p.id;
+
+                resultadosProduto.style.display = 'none';
+            };
+
+            resultadosProduto.appendChild(div);
+
+        });
 
     });
 </script>

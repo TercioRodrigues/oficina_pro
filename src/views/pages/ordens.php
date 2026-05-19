@@ -115,34 +115,17 @@
 
                 <div class="form-group">
                     <label for="km_atual">Km Atual*</label>
-                    <input type="text" name="km" id="km_atual">
+                    <input type="text" name="km" id="km_atual" required>
                 </div>
 
                 <div class="form-group">
                     <label for="mecanico">Mecânico*</label>
-                    <input type="text" id="mecanico" name="mecanico">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Data Abertura:</label>
-                    <input type="date" name="data_abertura" id="data_abertura" value="<?= date('Y-m-d') ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Status:</label>
-                    <select name="status" id="status" required>
-                        <option value="Aberta">Aberta</option>
-                        <option value="Em_Andamento">Em Andamento</option>
-                        <option value="Concluida">Concluída</option>
-                        <option value="Cancelada">Cancelada</option>
-                    </select>
+                    <input type="text" id="mecanico" name="mecanico" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Descrição do Problema:</label>
+                <label>Descrição do Problema:*</label>
                 <textarea name="descricao_problema" id="descricao_problema" required></textarea>
             </div>
 
@@ -155,11 +138,6 @@
                 <div class="form-group">
                     <label>Valor Total (R$):</label>
                     <input type="number" name="valor_total" id="valor_total" step="0.01" min="0" value="0" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Data Fechamento:</label>
-                    <input type="date" name="data_fechamento" id="data_fechamento">
                 </div>
             </div>
 

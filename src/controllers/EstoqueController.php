@@ -34,6 +34,7 @@ class EstoqueController extends Controller
                 'estoque.preco_custo',
                 'estoque.preco_venda',
                 'estoque.estoque_minimo',
+                'estoque.foto',
                 'categorias.nome as categoria',
                 'categorias.id as categoria_id'
             ])
@@ -77,6 +78,39 @@ class EstoqueController extends Controller
             $id = filter_input(INPUT_POST, 'id');
             $categoria_nome = filter_input(INPUT_POST, 'categoria_nome');
             $categoria_id = filter_input(INPUT_POST, 'categoria_id');
+            $arquivo = '';
+
+            if (!empty($_FILES['foto']['name'])) {
+
+                if ($_FILES['foto']['error'] > 0) {
+                    $mensagem = "Erro ao enviar a foto!";
+                    $this->redirect("/estoque?msg={$mensagem}");
+                    exit;
+                }
+
+
+                $diretorio = "Arquivos/" . $_SESSION['empresa_razao_social'] . "/upload/produtos";
+
+                if (!is_dir($diretorio))
+                    if (!mkdir($diretorio, 0777, true)) {
+                        $mensagem = "Erro ao criar diretório!";
+                        $this->redirect("/estoque?msg={$mensagem}");
+                        exit;
+                    }
+
+                $nome = time() . '_' . $_FILES['foto']['name'];
+
+                move_uploaded_file(
+                    $_FILES['foto']['tmp_name'],
+                    $diretorio . $nome
+                );
+
+                $arquivo = $diretorio . $nome;
+
+                if (is_file($_POST['foto_atual'])) {
+                    if (unlink($_POST['foto_atual']));
+                }
+            }
 
 
             if ($acao === 'cadastrar') {
@@ -88,7 +122,8 @@ class EstoqueController extends Controller
                     'preco_custo' => $preco_custo,
                     'preco_venda' => $preco_venda,
                     'estoque_minimo' => $estoque_minimo,
-                    'empresa_id' => $_SESSION['empresa_id']
+                    'empresa_id' => $_SESSION['empresa_id'],
+                    'foto' => $arquivo
                 ])->execute();
                 $mensagem = "Produto cadastrado com sucesso!";
                 $this->redirect("/estoque?msg={$mensagem}");
@@ -102,6 +137,7 @@ class EstoqueController extends Controller
                     'preco_custo' => $preco_custo,
                     'preco_venda' => $preco_venda,
                     'estoque_minimo' => $estoque_minimo,
+                    'foto' => $arquivo
                 ])
                     ->where('id', $id)
                     ->execute();

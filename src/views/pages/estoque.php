@@ -24,6 +24,7 @@
     <table>
         <thead>
             <tr>
+                <th>Foto</th>
                 <th>Código</th>
                 <th>Descrição</th>
                 <th>Categoria</th>
@@ -37,6 +38,14 @@
         <tbody>
             <?php foreach ($produtos as $produto): ?>
                 <tr>
+                    <td>
+                        <?php if (!empty($produto['foto'])): ?>
+                            <img src="/<?= $produto['foto'] ?>"
+                                class="produto-thumb">
+                        <?php else: ?>
+                            <div class="produto-sem-foto">📦</div>
+                        <?php endif; ?>
+                    </td>
                     <td><?= htmlspecialchars($produto['codigo']) ?></td>
                     <td><?= htmlspecialchars($produto['descricao']) ?></td>
                     <td><?= htmlspecialchars($produto['categoria']) ?></td>
@@ -75,7 +84,9 @@
 <div id="modal" class="modal">
     <div class="modal-content">
         <h2 id="modal-title">Cadastrar Produto</h2>
-        <form method="POST" action="/estoque/processar">
+        <form method="POST"
+            action="/estoque/processar"
+            enctype="multipart/form-data">
             <input type="hidden" name="acao" id="acao" value="cadastrar">
             <input type="hidden" name="id" id="produto-id">
 
@@ -123,6 +134,19 @@
                     <label>Preço de Venda (R$):</label>
                     <input type="number" name="preco_venda" id="preco_venda" step="0.01" min="0" required>
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label>Foto do Produto:</label>
+
+                <input type="file"
+                    name="foto"
+                    id="foto"
+                    accept="image/*">
+
+                <div id="preview-foto"></div>
+
+                <input type="hidden" name="foto_atual" id="foto_atual">
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">

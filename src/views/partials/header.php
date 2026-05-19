@@ -10,7 +10,9 @@ $pagina_atual = str_replace('/', '', $pagina_atual);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $_SESSION['empresa_nome'] ?></title>
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 

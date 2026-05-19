@@ -18,7 +18,7 @@ class Login extends Model
         return false;
     }
 
-    public static function fazerLogin($email, $senha)
+    public static function fazerLogin(string $email, string $senha)
     {
         $resultado = false;
         $usuario = Usuarios::select()->where('email', $email)->where('ativo', 1)->execute();
@@ -30,8 +30,9 @@ class Login extends Model
                 $_SESSION['usuario_email'] = $usuario[0]['email'];
                 $_SESSION['empresa_id'] = $usuario[0]['empresa_id'];
 
-                $empresa = Empresas::select(['nome_fantasia'])->where('id', $usuario[0]['empresa_id'])->get();
+                $empresa = Empresas::select(['nome_fantasia', 'razao_social'])->where('id', $usuario[0]['empresa_id'])->get();
                 $_SESSION['empresa_nome'] = $empresa[0]['nome_fantasia'];
+                $_SESSION['empresa_razao_social'] = $empresa[0]['razao_social'];
 
                 Usuarios::update()->set('ultimo_acesso', date('Y-m-d H:i:s'))->where('id', $usuario[0]['id'])->execute();
                 $resultado = true;

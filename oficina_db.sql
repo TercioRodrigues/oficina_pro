@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Tempo de geração: 21/03/2026 às 17:36
+-- Tempo de geração: 18/05/2026 às 15:54
 -- Versão do servidor: 10.11.14-MariaDB-0ubuntu0.24.04.1
 -- Versão do PHP: 8.3.6
 
@@ -20,6 +20,28 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `oficina_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `administrador`
+--
+
+CREATE TABLE `administrador` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `senha` varchar(100) NOT NULL,
+  `permissao` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `administrador`
+--
+
+INSERT INTO `administrador` (`id`, `nome`, `email`, `senha`, `permissao`) VALUES
+(1, 'Tércio', 'demo@sinesc.com.br', '$2y$10$IfPy/7hRv/Jz2V3HeXJmfOJ7ibQq3LVO8mMc1XXs/d1Upo0jLAyLa', 1),
+(2, '', '', '', 1);
 
 -- --------------------------------------------------------
 
@@ -81,7 +103,10 @@ INSERT INTO `caixa` (`id`, `tipo`, `categoria`, `descricao`, `valor`, `forma_pag
 (23, 'Entrada', 'Servicos', 'OS $ 18 - Tercio Rodrigues Feitosa', 185.50, 'PIX', NULL, NULL, 1, '2026-01-28', '2026-01-28 23:16:00', 1),
 (24, 'Entrada', 'Servicos', 'OS $ 19 - Tercio Rodrigues Feitosa', 545.50, 'PIX', NULL, NULL, 1, '2026-01-28', '2026-01-28 23:39:26', 1),
 (25, 'Entrada', 'Servicos', 'OS $ 23 - Tercio Rodrigues Feitosa', 545.50, 'PIX', NULL, NULL, 1, '2026-01-28', '2026-01-29 00:09:53', 1),
-(26, 'Entrada', 'Servicos', 'OS $ 26 - Tercio Rodrigues', 250.50, 'PIX', 26, NULL, 1, '2026-01-29', '2026-01-29 20:33:12', 1);
+(26, 'Entrada', 'Servicos', 'OS $ 26 - Tercio Rodrigues', 250.50, 'PIX', NULL, NULL, 1, '2026-01-29', '2026-01-29 20:33:12', 1),
+(27, 'Entrada', 'Servicos', 'OS $ 28 - Tercio Rodrigues', 130.50, 'PIX', NULL, NULL, 1, '2026-03-21', '2026-03-22 00:35:10', 1),
+(28, 'Entrada', 'Servicos', 'OS $ 30 - Tercio Rodrigues', 100.00, 'Cartão Débito', NULL, NULL, 1, '2026-03-23', '2026-03-23 11:49:12', 1),
+(29, 'Entrada', 'Servicos', 'OS $ 31 - Tercio Rodrigues', 278.50, 'Cartão Débito', 31, NULL, 1, '2026-03-23', '2026-03-23 12:24:46', 1);
 
 -- --------------------------------------------------------
 
@@ -220,7 +245,7 @@ CREATE TABLE `empresas` (
 --
 
 INSERT INTO `empresas` (`id`, `razao_social`, `nome_fantasia`, `cnpj`, `inscricao_estadual`, `telefone`, `whatsapp`, `email`, `site`, `cep`, `endereco`, `numero`, `complemento`, `bairro`, `cidade`, `estado`, `logo_url`, `horario_funcionamento`, `observacoes`, `produtos_garantia`, `data_atualizacao`) VALUES
-(1, 'Galego Mecânica LTDA', 'Gustavo Carro', '12.345.678/0001-90', '', '(81) 3456-7890', '81987441089', 'contato@oficinasilva.com.br', '', '55191700', 'Rua Júlio Ferreira de Araújo - Júlio de Biringuer', '71', '(Lot Leonor Araújo)', 'Santo Agostinho', 'Santa Cruz do Capibaribe', 'PE', NULL, '', '', 90, '2026-01-27 18:37:45');
+(1, 'Galego Mecânica LTDA', 'Sinesc', '12.345.678/0001-90', '', '(81) 3456-7890', '81987441089', 'contato@oficinasilva.com.br', '', '55191700', 'Rua Júlio Ferreira de Araújo - Júlio de Biringuer', '71', '(Lot Leonor Araújo)', 'Santo Agostinho', 'Santa Cruz do Capibaribe', 'PE', NULL, '', '', 90, '2026-03-23 12:52:48');
 
 -- --------------------------------------------------------
 
@@ -239,16 +264,18 @@ CREATE TABLE `estoque` (
   `estoque_minimo` int(11) DEFAULT NULL,
   `localizacao` varchar(100) DEFAULT NULL,
   `data_cadastro` timestamp NULL DEFAULT current_timestamp(),
-  `empresa_id` int(11) NOT NULL
+  `empresa_id` int(11) NOT NULL,
+  `foto` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Despejando dados para a tabela `estoque`
 --
 
-INSERT INTO `estoque` (`id`, `codigo`, `descricao`, `categoria`, `quantidade`, `preco_custo`, `preco_venda`, `estoque_minimo`, `localizacao`, `data_cadastro`, `empresa_id`) VALUES
-(10, 'PEC001', 'Filtro de Óleo', 2, 4, 35.00, 65.50, 10, NULL, '2026-01-26 06:16:19', 1),
-(11, 'FLU001', 'Óleo sintetico 1L', 3, -1, 20.00, 35.00, 5, NULL, '2026-01-26 18:58:36', 1);
+INSERT INTO `estoque` (`id`, `codigo`, `descricao`, `categoria`, `quantidade`, `preco_custo`, `preco_venda`, `estoque_minimo`, `localizacao`, `data_cadastro`, `empresa_id`, `foto`) VALUES
+(10, 'PEC001', 'Filtro de Óleo', 2, 2, 35.00, 65.50, 10, NULL, '2026-01-26 06:16:19', 1, NULL),
+(11, 'FLU001', 'Óleo sintetico 1L', 3, 1, 20.00, 35.00, 5, NULL, '2026-01-26 18:58:36', 1, NULL),
+(12, 'AG002', 'Agua desmineralizada 1L', 3, 18, 1.00, 4.00, 5, NULL, '2026-03-23 12:09:13', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -328,7 +355,9 @@ CREATE TABLE `garantias` (
 --
 
 INSERT INTO `garantias` (`id`, `os_id`, `tipo`, `item_id`, `descricao`, `data_inicio`, `data_fim`, `status`, `observacoes`, `data_cadastro`, `empresa_id`) VALUES
-(15, 26, 'Peça', 10, 'Filtro de Óleo', '2026-01-29', '2026-04-29', 'Ativa', NULL, '2026-01-29 20:33:12', 1);
+(17, 31, 'Peça', 11, 'Óleo sintetico 1L', '2026-03-23', '2026-06-21', 'Ativa', NULL, '2026-03-23 12:24:46', 1),
+(18, 31, 'Peça', 10, 'Filtro de Óleo', '2026-03-23', '2026-06-21', 'Ativa', NULL, '2026-03-23 12:24:46', 1),
+(19, 31, 'Peça', 12, 'Agua desmineralizada 1L', '2026-03-23', '2026-06-21', 'Ativa', NULL, '2026-03-23 12:24:46', 1);
 
 -- --------------------------------------------------------
 
@@ -371,8 +400,7 @@ INSERT INTO `orcamentos` (`id`, `cliente_nome`, `cliente_telefone`, `cliente_ema
 (10, 'Teste', '81987441089', '', 'Volkswagen', 'gol 1.6', '2010', 'KHM8E10', 'Teste', '', 65.50, 480.00, 545.50, 0.00, 7, 'Aprovado', 1, '2026-01-28', '2026-02-04', NULL, '2026-01-29 00:03:52', 1),
 (11, 'Teste', '81987441089', '', 'Volkswagen', 'gol 1.6', '2010', '', 'Teste', '', 65.50, 480.00, 545.50, 0.00, 7, 'Aprovado', 1, '2026-01-28', '2026-02-04', NULL, '2026-01-29 00:07:53', 1),
 (12, 'Tercio Rodrigues', '09261645461', '', 'Volkswagen', 'gol 1.6', '2010', 'KHM8E10', 'Troca de óleo', '', 65.50, 120.00, 185.50, 0.00, 7, 'Aprovado', 1, '2026-01-29', '2026-02-05', NULL, '2026-01-29 18:49:51', 1),
-(13, 'teste', '8198877444', '', 'Volkswagen', 'gol 1.6', '2010', '', 'Teste', '', 65.50, 185.00, 250.50, 0.00, 7, 'Aprovado', 1, '2026-01-29', '2026-02-05', NULL, '2026-01-29 18:56:33', 1),
-(14, 'teste', '81987441089', '', 'Volkswagen', 'gol 1.6', '2010', '', 'Teste', '', 65.50, 120.00, 185.50, 0.00, 7, 'Pendente', 1, '2026-01-29', '2026-02-05', NULL, '2026-01-29 20:36:32', 1);
+(13, 'teste', '8198877444', '', 'Volkswagen', 'gol 1.6', '2010', '', 'Teste', '', 65.50, 185.00, 250.50, 0.00, 7, 'Aprovado', 1, '2026-01-29', '2026-02-05', NULL, '2026-01-29 18:56:33', 1);
 
 -- --------------------------------------------------------
 
@@ -400,8 +428,7 @@ INSERT INTO `orcamento_itens_produtos` (`id`, `orcamento_id`, `produto_id`, `des
 (19, 10, 10, 'Filtro de Óleo', 1, 65.50, 65.50),
 (20, 11, 10, 'Filtro de Óleo', 1, 65.50, 65.50),
 (21, 12, 10, 'Filtro de Óleo', 1, 65.50, 65.50),
-(22, 13, 10, 'Filtro de Óleo', 1, 65.50, 65.50),
-(23, 14, 10, 'Filtro de Óleo', 1, 65.50, 65.50);
+(22, 13, 10, 'Filtro de Óleo', 1, 65.50, 65.50);
 
 -- --------------------------------------------------------
 
@@ -430,8 +457,7 @@ INSERT INTO `orcamento_itens_servicos` (`id`, `orcamento_id`, `servico_id`, `des
 (15, 11, 7, 'Torca de Óleo', 4, 120.00, 480.00),
 (16, 12, 7, 'Torca de Óleo', 1, 120.00, 120.00),
 (17, 13, 8, 'mao de obra', 1, 65.00, 65.00),
-(18, 13, 7, 'Torca de Óleo', 1, 120.00, 120.00),
-(19, 14, 7, 'Torca de Óleo', 1, 120.00, 120.00);
+(18, 13, 7, 'Torca de Óleo', 1, 120.00, 120.00);
 
 -- --------------------------------------------------------
 
@@ -445,6 +471,7 @@ CREATE TABLE `ordens_servico` (
   `veiculo_id` int(11) NOT NULL,
   `usuario_id` int(11) DEFAULT NULL,
   `mecanico_id` int(11) DEFAULT NULL,
+  `mecanico_nome` varchar(50) DEFAULT NULL,
   `data_abertura` date NOT NULL,
   `data_fechamento` date DEFAULT NULL,
   `previsao_entrega` datetime DEFAULT NULL,
@@ -468,8 +495,10 @@ CREATE TABLE `ordens_servico` (
 -- Despejando dados para a tabela `ordens_servico`
 --
 
-INSERT INTO `ordens_servico` (`id`, `cliente_id`, `veiculo_id`, `usuario_id`, `mecanico_id`, `data_abertura`, `data_fechamento`, `previsao_entrega`, `status`, `descricao_problema`, `diagnostico`, `observacoes`, `km_veiculo`, `valor_pecas`, `valor_servicos`, `valor_total`, `desconto`, `forma_pagamento`, `aprovado_cliente`, `data_cadastro`, `empresa_id`, `pago`) VALUES
-(26, 12, 17, 1, NULL, '2026-01-29', '2026-01-29', NULL, 'Concluido', 'Teste', NULL, '', NULL, 65.50, 185.00, 250.50, 0.00, 'PIX', 0, '2026-01-29 20:21:26', 1, 'Sim');
+INSERT INTO `ordens_servico` (`id`, `cliente_id`, `veiculo_id`, `usuario_id`, `mecanico_id`, `mecanico_nome`, `data_abertura`, `data_fechamento`, `previsao_entrega`, `status`, `descricao_problema`, `diagnostico`, `observacoes`, `km_veiculo`, `valor_pecas`, `valor_servicos`, `valor_total`, `desconto`, `forma_pagamento`, `aprovado_cliente`, `data_cadastro`, `empresa_id`, `pago`) VALUES
+(31, 12, 17, 1, NULL, 'Tércio', '2026-03-23', '2026-03-23', NULL, 'Concluido', 'Teste', NULL, 'Teste', 428620, 213.50, 65.00, 278.50, 0.00, 'Cartao Debito', 0, '2026-03-23 12:23:36', 1, 'Sim'),
+(32, 12, 17, 1, NULL, 'Tércio', '2025-11-15', '2025-11-20', NULL, 'Concluido', 'Teste', NULL, 'Teste', 420620, 213.50, 65.00, 278.50, 0.00, 'Cartao Debito', 0, '2025-11-15 12:23:36', 1, 'Sim'),
+(34, 12, 17, 1, NULL, 'Fulano', '2026-04-27', NULL, NULL, 'Aberta', 'Teste', NULL, '', 409240, 0.00, 0.00, 0.00, 0.00, NULL, 0, '2026-04-27 22:39:23', 1, 'Nao');
 
 -- --------------------------------------------------------
 
@@ -493,7 +522,13 @@ CREATE TABLE `os_itens_produtos` (
 --
 
 INSERT INTO `os_itens_produtos` (`id`, `os_id`, `produto_id`, `quantidade`, `valor_unitario`, `valor_total`, `garantia_ate`, `data_cadastro`) VALUES
-(33, 26, 10, 1, 65.50, 65.50, NULL, '2026-01-29 20:21:26');
+(35, 31, 11, 4, 35.00, 140.00, NULL, '2026-03-23 12:23:56'),
+(36, 31, 10, 1, 65.50, 65.50, NULL, '2026-03-23 12:24:02'),
+(37, 31, 12, 2, 4.00, 8.00, NULL, '2026-03-23 12:24:07'),
+(38, 32, 11, 4, 35.00, 140.00, NULL, '2026-03-23 12:23:56'),
+(39, 32, 10, 1, 65.50, 65.50, NULL, '2026-03-23 12:24:02'),
+(40, 32, 12, 2, 4.00, 8.00, NULL, '2026-03-23 12:24:07'),
+(42, 34, 12, 2, 4.00, 8.00, NULL, '2026-05-18 14:33:56');
 
 -- --------------------------------------------------------
 
@@ -517,8 +552,8 @@ CREATE TABLE `os_itens_servicos` (
 --
 
 INSERT INTO `os_itens_servicos` (`id`, `os_id`, `servico_id`, `quantidade`, `valor_unitario`, `valor_total`, `garantia_ate`, `data_cadastro`) VALUES
-(30, 26, 8, 1, 65.00, 65.00, NULL, '2026-01-29 20:21:26'),
-(31, 26, 7, 1, 120.00, 120.00, NULL, '2026-01-29 20:21:26');
+(34, 31, 8, 1, 65.00, 65.00, NULL, '2026-03-23 12:24:13'),
+(35, 32, 8, 1, 65.00, 65.00, NULL, '2026-03-23 12:24:13');
 
 -- --------------------------------------------------------
 
@@ -543,7 +578,8 @@ CREATE TABLE `servicos` (
 
 INSERT INTO `servicos` (`id`, `nome`, `descricao`, `valor`, `tempo_estimado`, `garantia_dias`, `data_cadastro`, `empresa_id`) VALUES
 (7, 'Torca de Óleo', 'Troca de Óleo', 120.00, '2 horas', 90, '2026-01-26 02:24:08', 1),
-(8, 'mao de obra', ' troca de oleo', 65.00, '3', 90, '2026-01-27 18:48:13', 1);
+(8, 'mao de obra', ' troca de oleo', 65.00, '3', 90, '2026-01-27 18:48:13', 1),
+(9, 'Revisão', 'Revisão', 100.00, '3 horas', 90, '2026-03-23 11:48:31', 1);
 
 -- --------------------------------------------------------
 
@@ -570,10 +606,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nome`, `email`, `telefone`, `foto_url`, `senha`, `nivel`, `ativo`, `ultimo_acesso`, `data_cadastro`, `empresa_id`) VALUES
-(1, 'Administrador', 'admin@oficina.com', '', NULL, '$2y$10$h4a7gTnR36kDvvxZT1JcOOvQoog72I88xBVNcgSiW0URuUDALAEHu', 'Admin', 1, '2026-03-03 01:16:32', '2026-01-20 05:10:29', 1),
-(2, 'Gerente Oficina', 'gerente@oficina.com', NULL, NULL, '$2y$10$Eej95PZVQUez8wFOcJMFteuhcUZ8gWZ99g5HPWaFsOCcn3giDXOtq', 'Gerente', 1, NULL, '2026-01-20 05:10:29', 1),
-(3, 'Atendente', 'atendente@oficina.com', NULL, NULL, '$2y$10$Eej95PZVQUez8wFOcJMFteuhcUZ8gWZ99g5HPWaFsOCcn3giDXOtq', 'Atendente', 1, NULL, '2026-01-20 05:10:29', 1),
-(4, 'tarcio', 'tarcio@oficina.com', '', NULL, '$2y$10$s5CZbOtNoNOuelsxvQXch.YwCXwuDsDZPm6TwbC6ZzcR19Wozvm6u', 'Atendente', 1, '2026-01-27 18:38:52', '2026-01-27 14:39:27', 1);
+(1, 'Administrador', 'demo@sinesc.com.br', '', NULL, '$2y$10$IfPy/7hRv/Jz2V3HeXJmfOJ7ibQq3LVO8mMc1XXs/d1Upo0jLAyLa', 'Admin', 1, '2026-05-18 17:29:17', '2026-01-20 05:10:29', 1);
 
 -- --------------------------------------------------------
 
@@ -600,7 +633,7 @@ CREATE TABLE `veiculos` (
 --
 
 INSERT INTO `veiculos` (`id`, `cliente_id`, `placa`, `marca`, `modelo`, `ano`, `cor`, `chassi`, `km_atual`, `data_cadastro`, `empresa_id`) VALUES
-(17, 12, 'KHM8E10', 'Volkswagen', 'gol 1.6', '2010', NULL, NULL, 420340, '2026-01-29 18:50:59', 1);
+(17, 12, 'KHM8E10', 'Volkswagen', 'gol 1.6', '2010', 'Prata', NULL, 409240, '2026-01-29 18:50:59', 1);
 
 -- --------------------------------------------------------
 
@@ -622,6 +655,12 @@ CREATE TABLE `whatsapp_log` (
 --
 -- Índices para tabelas despejadas
 --
+
+--
+-- Índices de tabela `administrador`
+--
+ALTER TABLE `administrador`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices de tabela `agendamentos`
@@ -805,6 +844,12 @@ ALTER TABLE `whatsapp_log`
 --
 
 --
+-- AUTO_INCREMENT de tabela `administrador`
+--
+ALTER TABLE `administrador`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de tabela `agendamentos`
 --
 ALTER TABLE `agendamentos`
@@ -814,7 +859,7 @@ ALTER TABLE `agendamentos`
 -- AUTO_INCREMENT de tabela `caixa`
 --
 ALTER TABLE `caixa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT de tabela `categorias`
@@ -844,7 +889,7 @@ ALTER TABLE `compras_itens`
 -- AUTO_INCREMENT de tabela `estoque`
 --
 ALTER TABLE `estoque`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de tabela `fornecedores`
@@ -862,7 +907,7 @@ ALTER TABLE `funcionarios`
 -- AUTO_INCREMENT de tabela `garantias`
 --
 ALTER TABLE `garantias`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de tabela `orcamentos`
@@ -886,25 +931,25 @@ ALTER TABLE `orcamento_itens_servicos`
 -- AUTO_INCREMENT de tabela `ordens_servico`
 --
 ALTER TABLE `ordens_servico`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT de tabela `os_itens_produtos`
 --
 ALTER TABLE `os_itens_produtos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT de tabela `os_itens_servicos`
 --
 ALTER TABLE `os_itens_servicos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT de tabela `servicos`
 --
 ALTER TABLE `servicos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`

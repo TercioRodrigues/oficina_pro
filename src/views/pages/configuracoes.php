@@ -22,7 +22,7 @@
         <div class="form-grid">
             <div class="form-group">
                 <label>Razão Social: *</label>
-                <input type="text" name="razao_social" value="<?= htmlspecialchars($config['razao_social']) ?>" required>
+                <input type="text" name="razao_social" value="<?= htmlspecialchars($config['razao_social']) ?>" disabled>
             </div>
 
             <div class="form-group">
@@ -32,7 +32,7 @@
 
             <div class="form-group">
                 <label>CNPJ: *</label>
-                <input type="text" name="cnpj" value="<?= htmlspecialchars($config['cnpj']) ?>" required>
+                <input type="text" name="cnpj" value="<?= htmlspecialchars($config['cnpj']) ?>" disabled>
             </div>
 
             <div class="form-group">

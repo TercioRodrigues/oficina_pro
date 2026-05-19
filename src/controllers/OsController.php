@@ -113,7 +113,8 @@ class OsController extends Controller
             'os_itens_produtos.valor_unitario',
             'os_itens_produtos.valor_total',
             'estoque.descricao',
-            'estoque.codigo'
+            'estoque.codigo',
+            'estoque.foto'
         ])
             ->join('estoque', 'os_itens_produtos.produto_id', '=', 'estoque.id')
             ->where('os_itens_produtos.os_id', $os_id)->execute();
@@ -154,7 +155,7 @@ class OsController extends Controller
 
             $cliente_id = filter_input(INPUT_POST, 'cliente_id');
             $veiculo_id = filter_input(INPUT_POST, 'veiculo_id');
-            $data_abertura = filter_input(INPUT_POST, 'data_abertura') ?? date('Y-m-d');
+            $data_abertura = date('Y-m-d');
             $status = filter_input(INPUT_POST, 'status') ?? 'Aberta';
             $descricao_problema = filter_input(INPUT_POST, 'descricao_problema');
             $obsercacoes = filter_input(INPUT_POST, 'observacoes');

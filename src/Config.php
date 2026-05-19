@@ -2,6 +2,8 @@
 
 namespace src;
 
+define('VERSAO', '1.1.0');
+
 class Config
 {
     const BASE_DIR = '';

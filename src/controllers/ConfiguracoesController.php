@@ -9,7 +9,7 @@ use src\models\Empresas;
 
 class ConfiguracoesController extends Controller
 {
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -39,9 +39,9 @@ class ConfiguracoesController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
-            $razao_social = filter_input(INPUT_POST, 'razao_social');
+            //$razao_social = filter_input(INPUT_POST, 'razao_social');
             $nome_fantasia = filter_input(INPUT_POST, 'nome_fantasia');
-            $cnpj = filter_input(INPUT_POST, 'cnpj');
+            //$cnpj = filter_input(INPUT_POST, 'cnpj');
             $inscricao_estadual = filter_input(INPUT_POST, 'inscricao_estadual');
             $telefone = filter_input(INPUT_POST, 'telefone');
             $whatsapp = filter_input(INPUT_POST, 'whatsapp');
@@ -57,12 +57,8 @@ class ConfiguracoesController extends Controller
             $horario_funcionamento = filter_input(INPUT_POST, 'horario_funcionamento');
             $observacoes = filter_input(INPUT_POST, 'observacoes');
 
-
-
             Empresas::update([
-                'razao_social' => $razao_social,
                 'nome_fantasia' => $nome_fantasia,
-                'cnpj' => $cnpj,
                 'inscricao_estadual' => $inscricao_estadual,
                 'telefone' => $telefone,
                 'whatsapp' => $whatsapp,

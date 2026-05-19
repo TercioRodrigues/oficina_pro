@@ -63,3 +63,5 @@ $router->get('/usuarios', 'UsuariosController@index');
 $router->post('/usuarios/processar', 'UsuariosController@ProcessarAcoes');
 
 $router->get('/painel', 'PainelController@index');
+
+$router->get('/sistema/versao', 'VersaoController@index');
