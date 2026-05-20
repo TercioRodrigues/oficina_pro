@@ -63,17 +63,17 @@
             <input type="hidden" name="id" id="cliente-id">
 
             <div class="form-group">
-                <label>Nome Completo:</label>
+                <label>Nome Completo:*</label>
                 <input type="text" name="nome" id="nome" required>
             </div>
 
             <div class="form-group">
-                <label>CPF:</label>
+                <label>CPF:*</label>
                 <input type="text" name="cpf" id="cpf" required>
             </div>
 
             <div class="form-group">
-                <label>Telefone:</label>
+                <label>Telefone:*</label>
                 <input type="text" name="telefone" id="telefone" required>
             </div>
 

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1deb3
+-- version 5.2.1deb1+deb12u1
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Tempo de geração: 18/05/2026 às 15:54
--- Versão do servidor: 10.11.14-MariaDB-0ubuntu0.24.04.1
--- Versão do PHP: 8.3.6
+-- Tempo de geração: 19/05/2026 às 20:43
+-- Versão do servidor: 10.11.14-MariaDB-0+deb12u2
+-- Versão do PHP: 8.2.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -160,7 +160,7 @@ INSERT INTO `clientes` (`id`, `nome`, `cpf`, `telefone`, `email`, `endereco`, `d
 
 CREATE TABLE `compras` (
   `id` int(11) NOT NULL,
-  `fornecedor_id` int(11) NOT NULL,
+  `fornecedor_id` int(11) DEFAULT NULL,
   `usuario_id` int(11) DEFAULT NULL,
   `numero_nf` varchar(50) DEFAULT NULL,
   `data_compra` date NOT NULL,
@@ -245,7 +245,8 @@ CREATE TABLE `empresas` (
 --
 
 INSERT INTO `empresas` (`id`, `razao_social`, `nome_fantasia`, `cnpj`, `inscricao_estadual`, `telefone`, `whatsapp`, `email`, `site`, `cep`, `endereco`, `numero`, `complemento`, `bairro`, `cidade`, `estado`, `logo_url`, `horario_funcionamento`, `observacoes`, `produtos_garantia`, `data_atualizacao`) VALUES
-(1, 'Galego Mecânica LTDA', 'Sinesc', '12.345.678/0001-90', '', '(81) 3456-7890', '81987441089', 'contato@oficinasilva.com.br', '', '55191700', 'Rua Júlio Ferreira de Araújo - Júlio de Biringuer', '71', '(Lot Leonor Araújo)', 'Santo Agostinho', 'Santa Cruz do Capibaribe', 'PE', NULL, '', '', 90, '2026-03-23 12:52:48');
+(1, 'Galego Mecânica LTDA', 'Sinesc', '12.345.678/0001-90', '', '(81) 3456-7890', '81987441089', 'contato@oficinasilva.com.br', '', '55191700', 'Rua Júlio Ferreira de Araújo - Júlio de Biringuer', '71', '(Lot Leonor Araújo)', 'Santo Agostinho', 'Santa Cruz do Capibaribe', 'PE', NULL, '', '', 90, '2026-03-23 12:52:48'),
+(2, '64.278.623 RINALDO DO NASCIMENTO TAVARES', 'RN', '64.278.623/0001-03', NULL, '81989544090', '81989544090', 'rinaldonastvs@gmail.com', NULL, '55191597', 'Avenida Olímpio Bezerra de Arruda', '8 Lj 8', '(Lot Sto Agostinho)', 'Santo Agostinho', 'Santa Cruz do Capibaribe', 'PE', NULL, NULL, NULL, 90, '2026-05-20 00:57:22');
 
 -- --------------------------------------------------------
 
@@ -273,7 +274,7 @@ CREATE TABLE `estoque` (
 --
 
 INSERT INTO `estoque` (`id`, `codigo`, `descricao`, `categoria`, `quantidade`, `preco_custo`, `preco_venda`, `estoque_minimo`, `localizacao`, `data_cadastro`, `empresa_id`, `foto`) VALUES
-(10, 'PEC001', 'Filtro de Óleo', 2, 2, 35.00, 65.50, 10, NULL, '2026-01-26 06:16:19', 1, NULL),
+(10, 'PEC001', 'Filtro de Óleo', 2, 2, 35.00, 65.50, 10, NULL, '2026-01-26 06:16:19', 1, 'Arquivos//upload/produtos1779217451_peca.jpg'),
 (11, 'FLU001', 'Óleo sintetico 1L', 3, 1, 20.00, 35.00, 5, NULL, '2026-01-26 18:58:36', 1, NULL),
 (12, 'AG002', 'Agua desmineralizada 1L', 3, 18, 1.00, 4.00, 5, NULL, '2026-03-23 12:09:13', 1, NULL);
 
@@ -390,18 +391,6 @@ CREATE TABLE `orcamentos` (
   `empresa_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Despejando dados para a tabela `orcamentos`
---
-
-INSERT INTO `orcamentos` (`id`, `cliente_nome`, `cliente_telefone`, `cliente_email`, `veiculo_marca`, `veiculo_modelo`, `veiculo_ano`, `veiculo_placa`, `descricao_servico`, `observacoes`, `valor_pecas`, `valor_servicos`, `valor_total`, `desconto`, `validade_dias`, `status`, `usuario_id`, `data_orcamento`, `data_validade`, `convertido_os_id`, `data_cadastro`, `empresa_id`) VALUES
-(8, 'Tercio', '81987441089', '', 'Volkswagen', 'gol 1.6', '2010', 'KHM8E10', 'Troca de filtro e oleo', '', 65.50, 480.00, 545.50, 0.00, 7, 'Aprovado', 1, '2026-01-28', '2026-02-04', NULL, '2026-01-28 23:37:30', 1),
-(9, 'tercio', '81987441089', '', 'Volkswagen', 'gol 1.6', '2010', 'KHM8E10', 'troca de oleo', '', 65.50, 480.00, 545.50, 0.00, 7, 'Aprovado', 1, '2026-01-28', '2026-02-04', NULL, '2026-01-28 23:42:25', 1),
-(10, 'Teste', '81987441089', '', 'Volkswagen', 'gol 1.6', '2010', 'KHM8E10', 'Teste', '', 65.50, 480.00, 545.50, 0.00, 7, 'Aprovado', 1, '2026-01-28', '2026-02-04', NULL, '2026-01-29 00:03:52', 1),
-(11, 'Teste', '81987441089', '', 'Volkswagen', 'gol 1.6', '2010', '', 'Teste', '', 65.50, 480.00, 545.50, 0.00, 7, 'Aprovado', 1, '2026-01-28', '2026-02-04', NULL, '2026-01-29 00:07:53', 1),
-(12, 'Tercio Rodrigues', '09261645461', '', 'Volkswagen', 'gol 1.6', '2010', 'KHM8E10', 'Troca de óleo', '', 65.50, 120.00, 185.50, 0.00, 7, 'Aprovado', 1, '2026-01-29', '2026-02-05', NULL, '2026-01-29 18:49:51', 1),
-(13, 'teste', '8198877444', '', 'Volkswagen', 'gol 1.6', '2010', '', 'Teste', '', 65.50, 185.00, 250.50, 0.00, 7, 'Aprovado', 1, '2026-01-29', '2026-02-05', NULL, '2026-01-29 18:56:33', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -418,18 +407,6 @@ CREATE TABLE `orcamento_itens_produtos` (
   `valor_total` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Despejando dados para a tabela `orcamento_itens_produtos`
---
-
-INSERT INTO `orcamento_itens_produtos` (`id`, `orcamento_id`, `produto_id`, `descricao`, `quantidade`, `valor_unitario`, `valor_total`) VALUES
-(17, 8, 10, 'Filtro de Óleo', 1, 65.50, 65.50),
-(18, 9, 10, 'Filtro de Óleo', 1, 65.50, 65.50),
-(19, 10, 10, 'Filtro de Óleo', 1, 65.50, 65.50),
-(20, 11, 10, 'Filtro de Óleo', 1, 65.50, 65.50),
-(21, 12, 10, 'Filtro de Óleo', 1, 65.50, 65.50),
-(22, 13, 10, 'Filtro de Óleo', 1, 65.50, 65.50);
-
 -- --------------------------------------------------------
 
 --
@@ -445,19 +422,6 @@ CREATE TABLE `orcamento_itens_servicos` (
   `valor_unitario` decimal(10,2) NOT NULL,
   `valor_total` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Despejando dados para a tabela `orcamento_itens_servicos`
---
-
-INSERT INTO `orcamento_itens_servicos` (`id`, `orcamento_id`, `servico_id`, `descricao`, `quantidade`, `valor_unitario`, `valor_total`) VALUES
-(12, 8, 7, 'Torca de Óleo', 4, 120.00, 480.00),
-(13, 9, 7, 'Torca de Óleo', 4, 120.00, 480.00),
-(14, 10, 7, 'Torca de Óleo', 4, 120.00, 480.00),
-(15, 11, 7, 'Torca de Óleo', 4, 120.00, 480.00),
-(16, 12, 7, 'Torca de Óleo', 1, 120.00, 120.00),
-(17, 13, 8, 'mao de obra', 1, 65.00, 65.00),
-(18, 13, 7, 'Torca de Óleo', 1, 120.00, 120.00);
 
 -- --------------------------------------------------------
 
@@ -606,7 +570,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nome`, `email`, `telefone`, `foto_url`, `senha`, `nivel`, `ativo`, `ultimo_acesso`, `data_cadastro`, `empresa_id`) VALUES
-(1, 'Administrador', 'demo@sinesc.com.br', '', NULL, '$2y$10$IfPy/7hRv/Jz2V3HeXJmfOJ7ibQq3LVO8mMc1XXs/d1Upo0jLAyLa', 'Admin', 1, '2026-05-18 17:29:17', '2026-01-20 05:10:29', 1);
+(1, 'Administrador', 'demo@sinesc.com.br', '', NULL, '$2y$10$IfPy/7hRv/Jz2V3HeXJmfOJ7ibQq3LVO8mMc1XXs/d1Upo0jLAyLa', 'Admin', 1, '2026-05-19 20:55:36', '2026-01-20 05:10:29', 1),
+(5, 'Rn', 'rinaldonastvs@gmail.com', NULL, NULL, '$2y$10$LY4Z6v1mO75Ucp63wiw5KO1ZIAIPW2uJ/4BST.rYFMlWVzpNsU0BG', 'Admin', 1, '2026-05-19 23:17:20', '2026-05-19 22:55:59', 2);
 
 -- --------------------------------------------------------
 
@@ -682,32 +647,31 @@ ALTER TABLE `caixa`
   ADD KEY `os_id` (`os_id`),
   ADD KEY `compra_id` (`compra_id`),
   ADD KEY `usuario_id` (`usuario_id`),
-  ADD KEY `idx_tipo` (`tipo`),
-  ADD KEY `idx_data` (`data_movimentacao`);
+  ADD KEY `empresa_id` (`empresa_id`);
 
 --
 -- Índices de tabela `categorias`
 --
 ALTER TABLE `categorias`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `empresa_id` (`empresa_id`);
 
 --
 -- Índices de tabela `clientes`
 --
 ALTER TABLE `clientes`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_nome` (`nome`),
-  ADD KEY `idx_cpf` (`cpf`),
-  ADD KEY `idx_telefone` (`telefone`);
+  ADD UNIQUE KEY `cpf` (`cpf`,`empresa_id`),
+  ADD KEY `empresa_id` (`empresa_id`);
 
 --
 -- Índices de tabela `compras`
 --
 ALTER TABLE `compras`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fornecedor_id` (`fornecedor_id`),
+  ADD KEY `empresa_id` (`empresa_id`),
   ADD KEY `usuario_id` (`usuario_id`),
-  ADD KEY `idx_data` (`data_compra`);
+  ADD KEY `fornecedor_id` (`fornecedor_id`);
 
 --
 -- Índices de tabela `compras_itens`
@@ -718,65 +682,63 @@ ALTER TABLE `compras_itens`
   ADD KEY `idx_compra` (`compra_id`);
 
 --
+-- Índices de tabela `empresas`
+--
+ALTER TABLE `empresas`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Índices de tabela `estoque`
 --
 ALTER TABLE `estoque`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `codigo` (`codigo`),
-  ADD KEY `idx_codigo` (`codigo`) USING BTREE,
-  ADD KEY `estoque_ibfk_1` (`categoria`);
+  ADD UNIQUE KEY `codigo` (`codigo`,`empresa_id`),
+  ADD KEY `empresa_id` (`empresa_id`),
+  ADD KEY `categoria` (`categoria`);
 
 --
 -- Índices de tabela `fornecedores`
 --
 ALTER TABLE `fornecedores`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_nome_empresa` (`nome_empresa`),
-  ADD KEY `idx_cnpj` (`cnpj`);
+  ADD UNIQUE KEY `cnpj` (`cnpj`,`empresa_id`),
+  ADD KEY `empresa_id` (`empresa_id`);
 
 --
 -- Índices de tabela `funcionarios`
 --
 ALTER TABLE `funcionarios`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `cpf` (`cpf`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_cargo` (`cargo`);
+  ADD KEY `empresa_id` (`empresa_id`);
 
 --
 -- Índices de tabela `garantias`
 --
 ALTER TABLE `garantias`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `os_id` (`os_id`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_data_fim` (`data_fim`);
+  ADD KEY `os_id` (`os_id`);
 
 --
 -- Índices de tabela `orcamentos`
 --
 ALTER TABLE `orcamentos`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `usuario_id` (`usuario_id`),
-  ADD KEY `convertido_os_id` (`convertido_os_id`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_data_orcamento` (`data_orcamento`);
+  ADD KEY `empresa_id` (`empresa_id`);
 
 --
 -- Índices de tabela `orcamento_itens_produtos`
 --
 ALTER TABLE `orcamento_itens_produtos`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `produto_id` (`produto_id`),
-  ADD KEY `idx_orcamento` (`orcamento_id`);
+  ADD KEY `orcamento_id` (`orcamento_id`);
 
 --
 -- Índices de tabela `orcamento_itens_servicos`
 --
 ALTER TABLE `orcamento_itens_servicos`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `servico_id` (`servico_id`),
-  ADD KEY `idx_orcamento` (`orcamento_id`);
+  ADD KEY `orcamento_id` (`orcamento_id`),
+  ADD KEY `servico_id` (`servico_id`);
 
 --
 -- Índices de tabela `ordens_servico`
@@ -819,7 +781,8 @@ ALTER TABLE `servicos`
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `idx_email` (`email`);
+  ADD KEY `idx_email` (`email`),
+  ADD KEY `usuarios_ibfk_1` (`empresa_id`);
 
 --
 -- Índices de tabela `veiculos`
@@ -913,7 +876,7 @@ ALTER TABLE `garantias`
 -- AUTO_INCREMENT de tabela `orcamentos`
 --
 ALTER TABLE `orcamentos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `orcamento_itens_produtos`
@@ -925,7 +888,7 @@ ALTER TABLE `orcamento_itens_produtos`
 -- AUTO_INCREMENT de tabela `orcamento_itens_servicos`
 --
 ALTER TABLE `orcamento_itens_servicos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `ordens_servico`
@@ -955,7 +918,7 @@ ALTER TABLE `servicos`
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de tabela `veiculos`
@@ -988,27 +951,54 @@ ALTER TABLE `agendamentos`
 ALTER TABLE `caixa`
   ADD CONSTRAINT `caixa_ibfk_1` FOREIGN KEY (`os_id`) REFERENCES `ordens_servico` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `caixa_ibfk_2` FOREIGN KEY (`compra_id`) REFERENCES `compras` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `caixa_ibfk_3` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `caixa_ibfk_3` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `caixa_ibfk_4` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `categorias`
+--
+ALTER TABLE `categorias`
+  ADD CONSTRAINT `categorias_ibfk_1` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `clientes`
+--
+ALTER TABLE `clientes`
+  ADD CONSTRAINT `clientes_ibfk_1` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `compras`
 --
 ALTER TABLE `compras`
-  ADD CONSTRAINT `compras_ibfk_1` FOREIGN KEY (`fornecedor_id`) REFERENCES `fornecedores` (`id`),
-  ADD CONSTRAINT `compras_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `compras_ibfk_1` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `compras_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `compras_ibfk_3` FOREIGN KEY (`fornecedor_id`) REFERENCES `fornecedores` (`id`) ON DELETE SET NULL;
 
 --
 -- Restrições para tabelas `compras_itens`
 --
 ALTER TABLE `compras_itens`
-  ADD CONSTRAINT `compras_itens_ibfk_1` FOREIGN KEY (`compra_id`) REFERENCES `compras` (`id`),
+  ADD CONSTRAINT `compras_itens_ibfk_1` FOREIGN KEY (`compra_id`) REFERENCES `compras` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `compras_itens_ibfk_2` FOREIGN KEY (`produto_id`) REFERENCES `estoque` (`id`);
 
 --
 -- Restrições para tabelas `estoque`
 --
 ALTER TABLE `estoque`
-  ADD CONSTRAINT `estoque_ibfk_1` FOREIGN KEY (`categoria`) REFERENCES `categorias` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `estoque_ibfk_1` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `estoque_ibfk_2` FOREIGN KEY (`categoria`) REFERENCES `categorias` (`id`) ON DELETE SET NULL;
+
+--
+-- Restrições para tabelas `fornecedores`
+--
+ALTER TABLE `fornecedores`
+  ADD CONSTRAINT `fornecedores_ibfk_1` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE;
+
+--
+-- Restrições para tabelas `funcionarios`
+--
+ALTER TABLE `funcionarios`
+  ADD CONSTRAINT `funcionarios_ibfk_1` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `garantias`
@@ -1020,15 +1010,13 @@ ALTER TABLE `garantias`
 -- Restrições para tabelas `orcamentos`
 --
 ALTER TABLE `orcamentos`
-  ADD CONSTRAINT `orcamentos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `orcamentos_ibfk_2` FOREIGN KEY (`convertido_os_id`) REFERENCES `ordens_servico` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `orcamentos_ibfk_1` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `orcamento_itens_produtos`
 --
 ALTER TABLE `orcamento_itens_produtos`
-  ADD CONSTRAINT `orcamento_itens_produtos_ibfk_1` FOREIGN KEY (`orcamento_id`) REFERENCES `orcamentos` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `orcamento_itens_produtos_ibfk_2` FOREIGN KEY (`produto_id`) REFERENCES `estoque` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `orcamento_itens_produtos_ibfk_1` FOREIGN KEY (`orcamento_id`) REFERENCES `orcamentos` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `orcamento_itens_servicos`
@@ -1059,6 +1047,12 @@ ALTER TABLE `os_itens_produtos`
 ALTER TABLE `os_itens_servicos`
   ADD CONSTRAINT `os_itens_servicos_ibfk_1` FOREIGN KEY (`os_id`) REFERENCES `ordens_servico` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `os_itens_servicos_ibfk_2` FOREIGN KEY (`servico_id`) REFERENCES `servicos` (`id`);
+
+--
+-- Restrições para tabelas `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `veiculos`
