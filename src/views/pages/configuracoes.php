@@ -190,13 +190,12 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">
+                    <button type="submit" class="btn btn-primary">
                         📤 Enviar Logo
                     </button>
                     <?php if (!empty($config['logo'])): ?>
                         <a href="/configuracoes/remover/logo"
                             class="btn btn-danger"
-                            style="padding: 10px 22px;"
                             onclick="return confirm('Deseja remover a logo atual?')">
                             🗑️ Remover Logo
                         </a>

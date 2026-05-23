@@ -15,7 +15,7 @@
 <header>
     <h1>🏢 Gestão de Fornecedores</h1>
     <div>
-        <a href="index.php" class="btn btn-secondary">← Voltar</a>
+        <button onclick="window.location.href='/'" class="btn btn-secondary">← Voltar</button>
         <button class="btn btn-primary" onclick="abrirModal()">+ Novo Fornecedor</button>
     </div>
 </header>

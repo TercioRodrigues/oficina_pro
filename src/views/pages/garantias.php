@@ -3,13 +3,13 @@
     <div class="card mb-4">
         <div class="card-body d-flex justify-content-between align-items-center">
             <h1 class="h3 mb-0">🛡️ Controle de Garantias</h1>
-            <a href="/dashboard" class="btn btn-secondary">← Dashboard</a>
+            <button onclick="window.location.href='/dashboard'" class="btn btn-secondary">← Dashboard</button>
         </div>
     </div>
 
     <div class="mb-3">
-        <a href="?status=ativa" class="btn btn-<?= $status_filtro === 'ativa' ? 'primary' : 'outline-primary' ?>">Ativas</a>
-        <a href="?status=todas" class="btn btn-<?= $status_filtro === 'todas' ? 'primary' : 'outline-primary' ?>">Todas</a>
+        <button onclick="window.location.href='?filtro=ativa'" class="btn btn-filtro <?= $status_filtro === 'ativa' ? 'active' : '' ?>">Ativas</button>
+        <button onclick="window.location.href='?filtro=todas'" class="btn btn-filtro <?= $status_filtro === 'todas' ? 'active' : '' ?>">Todas</button>
     </div>
 
     <div class="card">

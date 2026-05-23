@@ -94,7 +94,7 @@
 
         <div class="modal-header" style="padding-bottom: 8px; margin-bottom: 10px;">
             <h2 style="font-size: 18px;">Novo Orçamento</h2>
-            <button onclick="fecharModal()" class="btn-close">×</button>
+            <button onclick="fecharModal()" class="btn btn-close">×</button>
         </div>
 
         <form method="POST" action="/orcamentos/processar" id="form">

@@ -61,7 +61,7 @@ class GarantiasController extends Controller
         }
         $this->render('garantias', [
             'garantias' => $garantias,
-            'filtro' => $filtro
+            'status_filtro' => $filtro
         ]);
     }
 }

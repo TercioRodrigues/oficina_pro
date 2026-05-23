@@ -15,7 +15,7 @@
 <header>
     <h1>🚗 Gestão de Veículos</h1>
     <div>
-        <a href="/dashboard" class="btn btn-secondary">← Voltar</a>
+        <button onclick="window.location.href='/dashboard'" class="btn btn-secondary">← Voltar</button>
         <button class="btn btn-primary" onclick="abrirModal()">+ Novo Veículo</button>
     </div>
 </header>

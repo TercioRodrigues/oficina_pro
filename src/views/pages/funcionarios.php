@@ -24,9 +24,9 @@
         </div>
 
         <div class="filtros">
-            <a href="?status=Ativo" class="btn-filtro <?= $filtro_status === 'Ativo' ? 'active' : '' ?>">Ativos</a>
-            <a href="?status=Inativo" class="btn-filtro <?= $filtro_status === 'Inativo' ? 'active' : '' ?>">Inativos</a>
-            <a href="?status=Todos" class="btn-filtro <?= $filtro_status === 'Todos' ? 'active' : '' ?>">Todos</a>
+            <button onclick="window.location.href='?status=Ativo'" class="btn btn-filtro <?= $filtro_status === 'Ativo' ? 'active' : '' ?>">Ativos</button>
+            <button onclick="window.location.href='?status=Inativo'" class="btn btn-filtro <?= $filtro_status === 'Inativo' ? 'active' : '' ?>">Inativos</button>
+            <button onclick="window.location.href='?status=Todos'" class="btn btn-filtro <?= $filtro_status === 'Todos' ? 'active' : '' ?>">Todos</button>
         </div>
         <button class="btn btn-primary" onclick="abrirModal()">+ Novo Funcionário</button>
 

@@ -15,7 +15,7 @@
 <header>
     <h1>📋 Ordens de Serviço</h1>
     <div>
-        <a href="index.php" class="btn btn-secondary">← Voltar</a>
+        <button onclick="window.location.href='/'" class="btn btn-secondary">← Voltar</button>
         <button class="btn btn-primary" onclick="abrirModal()">+ Nova OS</button>
     </div>
 
@@ -26,12 +26,12 @@
         <h2 style="margin-bottom: 20px;">Lista de Ordens de Serviço</h2>
         <div style="display: flex; gap: 10px; align-items: center;">
             <div class="filtros">
-                <a href="?status=Aberta" class="btn-filtro <?= $status_filtro === 'Aberta' ? 'active' : '' ?>">Aberta</a>
-                <a href="?status=Em_Andamento" class="btn-filtro <?= $status_filtro === 'Em_Andamento' ? 'active' : '' ?>">Em Andamento</a>
-                <a href="?status=Aguardando_Pecas" class="btn-filtro <?= $status_filtro === 'Aguardando_Pecas' ? 'active' : '' ?>">Aguardando Peças</a>
-                <a href="?status=Aguardando_Aprovacao" class="btn-filtro <?= $status_filtro === 'Aguardando_Aprovacao' ? 'active' : '' ?>">Aguardando Aprovação</a>
-                <a href="?status=Concluido" class="btn-filtro <?= $status_filtro === 'Concluido' ? 'active' : '' ?>">Concluído</a>
-                <a href="?status=Cancelado" class="btn-filtro <?= $status_filtro === 'Cancelado' ? 'active' : '' ?>">Cancelado</a>
+                <button onclick="window.location.href='?status=Aberta';" class="btn btn-filtro <?= $status_filtro === 'Aberta' ? 'active' : '' ?>">Aberta</button>
+                <button onclick="window.location.href='?status=Em_Andamento';" class="btn btn-filtro <?= $status_filtro === 'Em_Andamento' ? 'active' : '' ?>">Em Andamento</button>
+                <button onclick="window.location.href='?status=Aguardando_Pecas';" class="btn btn-filtro <?= $status_filtro === 'Aguardando_Pecas' ? 'active' : '' ?>">Aguardando Peças</button>
+                <button onclick="window.location.href='?status=Aguardando_Aprovacao';" class="btn btn-filtro <?= $status_filtro === 'Aguardando_Aprovacao' ? 'active' : '' ?>">Aguardando Aprovação</button>
+                <button onclick="window.location.href='?status=Concluido';" class="btn btn-filtro <?= $status_filtro === 'Concluido' ? 'active' : '' ?>">Concluído</button>
+                <button onclick="window.location.href='?status=Cancelado';" class="btn btn-filtro <?= $status_filtro === 'Cancelado' ? 'active' : '' ?>">Cancelado</button>
             </div>
         </div>
     </div>

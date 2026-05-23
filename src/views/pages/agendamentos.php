@@ -15,17 +15,17 @@
 <header>
     <h1>📅 Agendamentos</h1>
     <div>
-        <a href="/" class="btn btn-secondary">← Dashboard</a>
+        <button onclick="window.location.href='/'" class="btn btn-secondary">← Dashboard</button>
         <button class="btn btn-primary" onclick="abrirModal()">+ Novo Agendamento</button>
     </div>
 </header>
 
 <!-- Filtros -->
 <div class="filtros">
-    <a href="?filtro=Agendado" class="<?= $filtro === 'Agendado' ? 'active' : '' ?>">Agendados</a>
-    <a href="?filtro=Confirmado" class="<?= $filtro === 'Confirmado' ? 'active' : '' ?>">Confirmados</a>
-    <a href="?filtro=Concluido" class="<?= $filtro === 'Concluido' ? 'active' : '' ?>">Concluído</a>
-    <a href="?filtro=Cancelado" class="<?= $filtro === 'Cancelado' ? 'active' : '' ?>">Cancelados</a>
+    <button onclick="window.location.href='?filtro=Agendado'" class="btn btn-filtro <?= $filtro === 'Agendado' ? 'active' : '' ?>">Agendados</button>
+    <button onclick="window.location.href='?filtro=Confirmado'" class="btn btn-filtro <?= $filtro === 'Confirmado' ? 'active' : '' ?>">Confirmados</button>
+    <button onclick="window.location.href='?filtro=Concluido'" class="btn btn-filtro <?= $filtro === 'Concluido' ? 'active' : '' ?>">Concluído</button>
+    <button onclick="window.location.href='?filtro=Cancelado'" class="btn btn-filtro <?= $filtro === 'Cancelado' ? 'active' : '' ?>">Cancelados</button>
 </div>
 
 <div class="card">

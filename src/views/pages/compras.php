@@ -15,7 +15,7 @@
 <header>
     <h1>🛒 Gestão de Compras</h1>
     <div>
-        <a href="/dashboard" class="btn btn-secondary">← Voltar</a>
+        <button onclick="window.location.href='/dashboard'" class="btn btn-secondary">← Voltar</button>
         <button class="btn btn-primary" onclick="abrirModal()">+ Nova Compra</button>
     </div>
 </header>

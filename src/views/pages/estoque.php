@@ -15,9 +15,9 @@
 <header>
     <h1>📦 Gestão de Estoque</h1>
     <div>
-        <a href="index.php" class="btn btn-secondary">← Voltar</a>
+        <button onclick="window.location.href='/'" class="btn btn-secondary">← Voltar</button>
         <button class="btn btn-primary" onclick="abrirModal()">+ Novo Produto</button>
-        <a href="/estoque/categorias" class="btn btn-primary">Categorias</a>
+        <button onclick="window.location.href='/estoque/categorias'" class="btn btn-primary">Categorias</button>
     </div>
 </header>
 
