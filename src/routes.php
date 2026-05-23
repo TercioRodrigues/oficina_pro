@@ -22,6 +22,7 @@ $router->get('/Os', 'OsController@index');
 $router->get('/Os/itens', 'OsController@osItens');
 $router->post('/Os/processar', 'OsController@processarAcoes');
 $router->get('/Os/imprimir/{id}', 'OsController@imprimirOs');
+$router->get('/Os/cliente/{id}/buscarveiculo', 'OsController@buscarVeiculo');
 
 $router->get('/agendamentos', 'AgendamentosController@index');
 $router->post('/agendamentos/processar', 'AgendamentosController@ProcessarAcoes');
@@ -58,6 +59,8 @@ $router->post('/funcionarios/processar', 'FuncionariosController@ProcessarAcoes'
 
 $router->get('/configuracoes', 'ConfiguracoesController@index');
 $router->post('/configuracoes/processar', 'ConfiguracoesController@ProcessarAcoes');
+$router->post('/configuracoes/upload/logo', 'ConfiguracoesController@uploadLogo');
+$router->get('/configuracoes/remover/logo', 'ConfiguracoesController@removerLogo');
 
 $router->get('/usuarios', 'UsuariosController@index');
 $router->post('/usuarios/processar', 'UsuariosController@ProcessarAcoes');

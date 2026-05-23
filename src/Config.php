@@ -2,7 +2,7 @@
 
 namespace src;
 
-define('VERSAO', '1.1.0');
+define('VERSAO', '1.2.1');
 
 class Config
 {

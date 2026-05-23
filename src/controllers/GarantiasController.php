@@ -8,7 +8,7 @@ use src\models\Garantias;
 
 class GarantiasController extends Controller
 {
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();

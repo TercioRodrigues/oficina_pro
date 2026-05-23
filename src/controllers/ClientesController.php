@@ -8,7 +8,7 @@ use src\models\Clientes;
 
 class ClientesController extends Controller
 {
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -20,14 +20,10 @@ class ClientesController extends Controller
 
     public function index()
     {
-        $mensagem = filter_input(INPUT_GET, 'msg');
-
         $clientes = Clientes::select()->where('empresa_id', $_SESSION['empresa_id'])->get();
 
-
         $this->render('clientes', [
-            'clientes' => $clientes,
-            'mensagem' => $mensagem
+            'clientes' => $clientes
         ]);
     }
 
@@ -35,41 +31,48 @@ class ClientesController extends Controller
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            $acao = filter_input(INPUT_POST, 'acao') ?? '';
-            $nome = filter_input(INPUT_POST, 'nome') ?? '';
-            $cpf = filter_input(INPUT_POST, 'cpf') ?? '';
-            $email = filter_input(INPUT_POST, 'email') ?? '';
-            $telefone = filter_input(INPUT_POST, 'telefone') ?? '';
-            $endereco = filter_input(INPUT_POST, 'endereco') ?? '';
-            $cliente_id = filter_input(INPUT_POST, 'id');
+            $dados = filter_input_array(INPUT_POST);
 
-            if ($acao === 'cadastrar') {
+            if ($dados['acao'] === 'cadastrar') {
 
                 Clientes::insert([
-                    'nome' => $nome,
-                    'cpf' => $cpf,
-                    'telefone' => $telefone,
-                    'email' => $email,
-                    'endereco' => $endereco,
-                    'empresa_id' => $_SESSION['empresa_id']
+                    'nome' => $dados['nome'],
+                    'cpf_cnpj' => $dados['cpf'],
+                    'telefone' => $dados['telefone'],
+                    'email' => $dados['email'],
+                    'empresa_id' => $_SESSION['empresa_id'],
+                    'endereco' => $dados['endereco'],
+                    'numero' => $dados['numero'],
+                    'bairro' => $dados['bairro'],
+                    'cidade' => $dados['cidade'],
+                    'estado' => $dados['estado'],
+                    'cep' => $dados['cep']
                 ])->execute();
-                $mensagem = "Cliente cadastrado com sucesso!";
-                $this->redirect("/clientes?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Cliente cadastrado com sucesso!";
+                $this->redirect("/clientes");
                 exit;
-            } elseif ($acao === 'editar') {
-                Clientes::update()
-                    ->set('nome', $nome)
-                    ->set('cpf', $cpf)
-                    ->set('telefone', $telefone)
-                    ->set('email', $email)
-                    ->set('endereco', $endereco)->where('id', $cliente_id)->execute();
-                $mensagem = "Cliente atualizado com sucesso!";
-                $this->redirect("/clientes?msg={$mensagem}");
+            } elseif ($dados['acao'] === 'editar') {
+                Clientes::update([
+                    'nome' => $dados['nome'],
+                    'cpf_cnpj' => $dados['cpf'],
+                    'telefone' => $dados['telefone'],
+                    'email' => $dados['email'],
+                    'empresa_id' => $_SESSION['empresa_id'],
+                    'endereco' => $dados['endereco'],
+                    'numero' => $dados['numero'],
+                    'bairro' => $dados['bairro'],
+                    'cidade' => $dados['cidade'],
+                    'estado' => $dados['estado'],
+                    'cep' => $dados['cep']
+                ])
+                    ->where('id', $dados['id'])->execute();
+                $_SESSION['mensagem'] = "Cliente atualizado com sucesso!";
+                $this->redirect("/clientes");
                 exit;
-            } elseif ($acao === 'excluir') {
-                Clientes::delete()->where('id', $cliente_id)->execute();
-                $mensagem = "Cliente excluído com sucesso!";
-                $this->redirect("/clientes?msg={$mensagem}");
+            } elseif ($dados['acao'] === 'excluir') {
+                Clientes::delete()->where('id', $dados['id'])->execute();
+                $_SESSION['mensagem'] = "Cliente excluído com sucesso!";
+                $this->redirect("/clientes");
                 exit;
             }
         }

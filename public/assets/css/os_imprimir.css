@@ -5,135 +5,281 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
-    padding: 30px;
-    font-size: 12pt;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: 12mm 14mm;
+    font-size: 9pt;
+    color: #1a1a2e;
+    background: #fff;
 }
 
+/* ── Cabeçalho ── */
 .header {
-    text-align: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 3px solid #333;
-}
-
-.header h1 {
-    font-size: 24pt;
+    display: flex;
+    align-items: center;
+    gap: 14px;
     margin-bottom: 10px;
-}
-
-.header p {
-    margin: 5px 0;
-}
-
-.os-numero {
-    background: #333;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #1a3a6b;
+    background: linear-gradient(135deg, #1a3a6b 0%, #2563b0 100%);
     color: white;
-    padding: 15px;
-    text-align: center;
-    font-size: 18pt;
-    font-weight: bold;
-    margin-bottom: 20px;
+    padding: 10px 14px;
+    border-radius: 6px 6px 0 0;
 }
 
+.header-logo {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: white;
+    padding: 4px;
+    flex-shrink: 0;
+}
+
+/* Placeholder logo (SVG inline caso não haja imagem) */
+.header-logo-placeholder {
+    width: 64px;
+    height: 64px;
+    background: white;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 4px;
+}
+
+.header-info {
+    flex: 1;
+    text-align: left;
+}
+
+.header-info h1 {
+    font-size: 15pt;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+    color: #fff;
+}
+
+.header-info p {
+    margin: 2px 0;
+    font-size: 8.5pt;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* ── Número da OS ── */
+.os-numero {
+    background: linear-gradient(90deg, #e85d04 0%, #f48c06 100%);
+    color: white;
+    padding: 7px 12px;
+    text-align: center;
+    font-size: 12pt;
+    font-weight: bold;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+    border-radius: 0 0 4px 4px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Seções ── */
 .secao {
-    margin-bottom: 25px;
+    margin-bottom: 10px;
 }
 
 .secao-title {
-    background: #f0f0f0;
-    padding: 10px;
+    background: linear-gradient(90deg, #1a3a6b, #2563b0);
+    color: white;
+    padding: 5px 10px;
     font-weight: bold;
-    font-size: 14pt;
-    margin-bottom: 10px;
-    border-left: 5px solid #333;
+    font-size: 8pt;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
+/* ── Grid de dados — 4 colunas ── */
 .dados-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 15px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 4px 8px;
+    margin-bottom: 5px;
+}
+
+.dado-full {
+    grid-column: 1 / -1;
 }
 
 .dado {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
+    padding: 4px 6px;
+    border-bottom: 1px solid #dce8f7;
+    font-size: 8.5pt;
+    line-height: 1.4;
+    background: #f7faff;
+    border-radius: 2px;
 }
 
 .dado-label {
     font-weight: bold;
-    color: #666;
+    color: #1a3a6b;
+    font-size: 7.5pt;
+    display: block;
+    margin-bottom: 1px;
 }
 
+/* ── Tabelas ── */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 0;
+    font-size: 8pt;
 }
 
 th,
 td {
-    padding: 10px;
+    padding: 5px 7px;
     text-align: left;
-    border: 1px solid #ddd;
+    border: 1px solid #c8dbf5;
 }
 
 th {
-    background: #f0f0f0;
+    background: linear-gradient(90deg, #1a3a6b, #2563b0);
+    color: white;
     font-weight: bold;
+    font-size: 7.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tbody tr:nth-child(even) td {
+    background: #f0f6ff;
+}
+
+/* ── Totais + Assinaturas ── */
+.rodape-bloco {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 12px;
+    gap: 20px;
+    clear: both;
 }
 
 .totais {
-    margin-top: 30px;
-    float: right;
-    width: 300px;
+    width: 240px;
+    flex-shrink: 0;
+    border: 1px solid #c8dbf5;
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 .total-linha {
     display: flex;
     justify-content: space-between;
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
+    padding: 5px 8px;
+    border-bottom: 1px solid #dce8f7;
+    font-size: 8.5pt;
+    background: #f7faff;
 }
 
 .total-final {
-    background: #333;
+    background: linear-gradient(90deg, #e85d04 0%, #f48c06 100%);
     color: white;
-    font-size: 16pt;
+    font-size: 11pt;
     font-weight: bold;
-    padding: 12px;
+    padding: 7px 10px;
+    border-bottom: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
+/* ── Assinaturas ── */
 .assinaturas {
-    margin-top: 80px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 50px;
-    clear: both;
+    display: flex;
+    gap: 30px;
+    flex: 1;
+    align-items: flex-end;
 }
 
 .assinatura {
+    flex: 1;
     text-align: center;
-    padding-top: 50px;
-    border-top: 2px solid #333;
+    padding-top: 30px;
+    border-top: 2px solid #1a3a6b;
+    font-size: 8.5pt;
+    color: #1a3a6b;
+    font-weight: bold;
 }
 
+/* ── Rodapé ── */
 .rodape {
-    margin-top: 50px;
-    padding-top: 20px;
-    border-top: 2px solid #333;
+    margin-top: 10px;
+    padding-top: 6px;
+    border-top: 1px solid #c8dbf5;
     text-align: center;
-    font-size: 10pt;
-    color: #666;
+    font-size: 7.5pt;
+    color: #6b8cbc;
 }
 
+/* ── Botões ── */
+.no-print {
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+.no-print button {
+    background: linear-gradient(90deg, #1a3a6b, #2563b0);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10pt;
+    padding: 8px 22px;
+    transition: opacity 0.2s;
+}
+
+.no-print button:hover {
+    opacity: 0.85;
+}
+
+/* ── Impressão ── */
 @media print {
+    @page {
+        size: A4 portrait;
+        margin: 12mm 14mm;
+    }
+
     body {
         padding: 0;
+        font-size: 9pt;
     }
 
     .no-print {
         display: none;
+    }
+
+    /* Forçar cores na impressão */
+    .header,
+    .os-numero,
+    .secao-title,
+    th,
+    .total-final {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .secao,
+    .rodape-bloco,
+    .assinaturas,
+    .totais {
+        break-inside: avoid;
+    }
+
+    table {
+        break-inside: auto;
+    }
+
+    tr {
+        break-inside: avoid;
     }
 }

@@ -9,7 +9,7 @@ use src\models\Servicos;
 
 class ServicosController extends Controller
 {
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -21,11 +21,9 @@ class ServicosController extends Controller
 
     public function index()
     {
-        $mensagem = filter_input(INPUT_GET, 'msg');
         $servicos = servicos::select()->where('empresa_id', $_SESSION['empresa_id'])->get();
         $this->render('servicos', [
-            'servicos' => $servicos,
-            'mensagem' => $mensagem
+            'servicos' => $servicos
         ]);
     }
 
@@ -52,8 +50,8 @@ class ServicosController extends Controller
                     'empresa_id' => $_SESSION['empresa_id']
                 ])->execute();
 
-                $mensagem = "Serviço cadastrado com sucesso!";
-                $this->redirect("/servicos?msg=$mensagem");
+                $_SESSION['mensagem'] = "Serviço cadastrado com sucesso!";
+                $this->redirect("/servicos");
                 exit;
             } elseif ($acao === 'editar') {
                 Servicos::update([
@@ -63,13 +61,13 @@ class ServicosController extends Controller
                     'tempo_estimado' => $tempo_estimado,
                     'empresa_id' => $_SESSION['empresa_id']
                 ])->where('id', $id)->execute();
-                $mensagem = "Serviço atualizado com sucesso!";
-                $this->redirect("/servicos?msg=$mensagem");
+                $_SESSION['mensagem'] = "Serviço atualizado com sucesso!";
+                $this->redirect("/servicos");
                 exit;
             } elseif ($acao === 'excluir') {
                 Servicos::delete()->where('id', $id)->execute();
-                $mensagem = "Serviço excluído com sucesso!";
-                $this->redirect("/servicos?msg=$mensagem");
+                $_SESSION['mensagem'] = "Serviço excluído com sucesso!";
+                $this->redirect("/servicos");
                 exit;
             }
         }

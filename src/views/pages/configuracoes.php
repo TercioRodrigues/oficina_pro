@@ -1,6 +1,8 @@
 <?= $render('header') ?>
-<?php if (!empty($mensagem)): ?>
-    <div id="aviso" class="mensagem hide"><?= $mensagem ?></div>
+<?php if (!empty($_SESSION['mensagem'])): ?>
+    <div id="aviso" class="mensagem hide">
+        <?php echo $_SESSION['mensagem'];
+        unset($_SESSION['mensagem']);  ?></div>
     <script>
         const aviso = document.getElementById('aviso');
         aviso.classList.remove('hide');
@@ -10,12 +12,17 @@
         }, 5000);
     </script>
 <?php endif; ?>
+
 <div class="page-header">
     <h1>⚙️ Configurações da Empresa</h1>
     <p class="breadcrumb">Início / Configurações</p>
 </div>
 
+<!-- ========================================
+     FORMULÁRIO PRINCIPAL (dados da empresa)
+     ======================================== -->
 <form method="POST" action="/configuracoes/processar">
+
     <div class="card">
         <h2 style="margin-bottom: 20px; color: #2c3e50;">📋 Dados da Empresa</h2>
 
@@ -131,23 +138,89 @@
     </div>
 </form>
 
+<!-- ========================================
+     FORMULÁRIO SEPARADO: Upload da Logo
+     (enctype obrigatório para envio de arquivo)
+     ======================================== -->
+<form method="POST" action="/configuracoes/upload/logo" enctype="multipart/form-data" id="form-logo">
+    <div class="card" style="margin-top: 30px;">
+        <h2 style="margin-bottom: 20px; color: #2c3e50;">🖼️ Logo da Empresa</h2>
+
+        <div style="display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+
+            <!-- Logo atual -->
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <span style="font-size: 0.9em; font-weight: 600; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px;">Logo Atual</span>
+                <div id="logo-atual-container" style="width: 160px; height: 160px; border: 2px dashed #ddd; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden;">
+                    <?php if (!empty($config['logo'])): ?>
+                        <img id="logo-atual"
+                            src="<?= htmlspecialchars($config['logo']) ?>"
+                            alt="Logo atual"
+                            style="max-width: 100%; max-height: 100%; object-fit: contain; padding: 8px;">
+                    <?php else: ?>
+                        <span id="logo-placeholder" style="font-size: 2.5em; color: #ccc;">🏢</span>
+                    <?php endif; ?>
+                </div>
+                <?php if (!empty($config['logo'])): ?>
+                    <small style="color: #7f8c8d; font-size: 0.8em; text-align: center;">
+                        <?= htmlspecialchars(basename($config['logo'])) ?>
+                    </small>
+                <?php endif; ?>
+            </div>
+
+            <!-- Controles de upload -->
+            <div style="flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 15px; justify-content: center;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Selecionar nova logo:</label>
+                    <input type="file"
+                        name="logo"
+                        id="input-logo"
+                        accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                        style="padding: 8px; border: 1px solid #ddd; border-radius: 8px; width: 100%; cursor: pointer;">
+                    <small style="color: #7f8c8d;">Formatos aceitos: PNG, JPG, WEBP, SVG. Tamanho máximo: 2 MB.</small>
+                </div>
+
+                <!-- Preview da imagem selecionada -->
+                <div id="preview-container" style="display: none; flex-direction: column; gap: 8px;">
+                    <span style="font-size: 0.85em; color: #667eea; font-weight: 600;">📋 Pré-visualização:</span>
+                    <img id="preview-logo"
+                        src=""
+                        alt="Pré-visualização"
+                        style="max-width: 160px; max-height: 100px; object-fit: contain; border: 1px solid #ddd; border-radius: 8px; padding: 6px; background: #fafafa;">
+                </div>
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="submit" class="btn btn-primary" style="padding: 10px 22px;">
+                        📤 Enviar Logo
+                    </button>
+                    <?php if (!empty($config['logo'])): ?>
+                        <a href="/configuracoes/remover/logo"
+                            class="btn btn-danger"
+                            style="padding: 10px 22px;"
+                            onclick="return confirm('Deseja remover a logo atual?')">
+                            🗑️ Remover Logo
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+
 <script>
+    /* ── CEP Autocomplete ── */
     const meuCep = document.getElementById('cep');
     var cep = '';
     meuCep.addEventListener('input', () => {
         if (meuCep.value.length >= 8) {
-
-            if (meuCep.value.length > 8) {
-                cep = meuCep.value.replace(['.', ',', '-', '_']);
-            } else {
-                cep = meuCep.value;
-            }
+            cep = meuCep.value.length > 8 ?
+                meuCep.value.replace(/[.,\-_]/g, '') :
+                meuCep.value;
 
             fetch(`https://viacep.com.br/ws/${cep}/json`)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro na rede: ' + response.status);
-                    }
+                    if (!response.ok) throw new Error('Erro na rede: ' + response.status);
                     return response.json();
                 })
                 .then(data => {
@@ -158,13 +231,40 @@
                         document.getElementById('estado').value = data.uf;
                         document.getElementById('complemento').value = data.complemento;
                     } else {
-                        alert('Cep não encontrado, clique para continuar');
+                        alert('CEP não encontrado, clique para continuar');
                     }
                 })
-                .catch(Error => {
-                    console.Error(Error)
-                });
+                .catch(error => console.error(error));
         }
+    });
+
+    /* ── Preview da logo antes do envio ── */
+    const inputLogo = document.getElementById('input-logo');
+    const previewContainer = document.getElementById('preview-container');
+    const previewLogo = document.getElementById('preview-logo');
+
+    inputLogo.addEventListener('change', () => {
+        const arquivo = inputLogo.files[0];
+
+        if (!arquivo) {
+            previewContainer.style.display = 'none';
+            return;
+        }
+
+        // Validação de tamanho (2 MB)
+        if (arquivo.size > 2 * 1024 * 1024) {
+            alert('A imagem deve ter no máximo 2 MB.');
+            inputLogo.value = '';
+            previewContainer.style.display = 'none';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewLogo.src = e.target.result;
+            previewContainer.style.display = 'flex';
+        };
+        reader.readAsDataURL(arquivo);
     });
 </script>
 

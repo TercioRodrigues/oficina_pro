@@ -10,7 +10,7 @@ use src\models\Caixa;
 
 class CaixaController extends Controller
 {
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -26,7 +26,6 @@ class CaixaController extends Controller
             $data_inicio = filter_input(INPUT_GET, 'data_inicio') ?? date('Y-m-01');
             $data_fim = filter_input(INPUT_GET, 'data_fim') ?? date('Y-m-d');
             $tipo_filtro = filter_input(INPUT_GET, 'tipo') ?? '';
-            $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
 
             if (!empty($tipo_filtro)) {
 
@@ -70,8 +69,7 @@ class CaixaController extends Controller
                 'data_fim' => $data_fim,
                 'total_entradas' => $total_entradas,
                 'total_saidas' => $total_saidas,
-                'saldo' => $saldo,
-                'mensagem' => $mensagem
+                'saldo' => $saldo
             ]);
         } else {
             $this->render('acesso_negado', []);
@@ -102,13 +100,13 @@ class CaixaController extends Controller
                     'empresa_id' => $_SESSION['empresa_id']
                 ])->execute();
 
-                $mensagem = "Lançamento registrado com sucesso!";
-                $this->redirect("/caixa?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Lançamento registrado com sucesso!";
+                $this->redirect("/caixa");
                 exit;
             } elseif ($acao === 'excluir') {
                 Caixa::delete()->where('id', $id)->execute();
-                $mensagem = "Lançamento excluído!";
-                $this->redirect("/caixa?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Lançamento excluído!";
+                $this->redirect("/caixa");
             }
         }
     }

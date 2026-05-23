@@ -11,7 +11,7 @@ use src\models\Categorias;
 
 class EstoqueController extends Controller
 {
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -24,7 +24,6 @@ class EstoqueController extends Controller
     public function index()
     {
         if ($_SESSION['usuario_nivel'] == 'Admin' || $_SESSION['usuario_nivel'] == 'Gerente') {
-            $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
 
             $estoque = Estoque::select([
                 'estoque.id',
@@ -45,7 +44,6 @@ class EstoqueController extends Controller
 
             $this->render('estoque', [
                 'produtos' => $estoque,
-                'mensagem' => $mensagem,
                 'categorias' => $categorias
             ]);
         } else {
@@ -55,11 +53,9 @@ class EstoqueController extends Controller
 
     public function categorias()
     {
-        $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
         $categorias = Categorias::select()->where('empresa_id', $_SESSION['empresa_id'])->get();
         $this->render('estoque_categoria', [
-            'categorias' => $categorias,
-            'mensagem' => $mensagem
+            'categorias' => $categorias
         ]);
     }
 
@@ -83,18 +79,17 @@ class EstoqueController extends Controller
             if (!empty($_FILES['foto']['name'])) {
 
                 if ($_FILES['foto']['error'] > 0) {
-                    $mensagem = "Erro ao enviar a foto!";
-                    $this->redirect("/estoque?msg={$mensagem}");
+                    $_SESSION['mensagem'] = "Erro ao enviar a foto!";
+                    $this->redirect("/estoque");
                     exit;
                 }
-
 
                 $diretorio = "Arquivos/" . $_SESSION['empresa_razao_social'] . "/upload/produtos";
 
                 if (!is_dir($diretorio))
                     if (!mkdir($diretorio, 0777, true)) {
-                        $mensagem = "Erro ao criar diretório!";
-                        $this->redirect("/estoque?msg={$mensagem}");
+                        $_SESSION['mensagem'] = "Erro ao criar diretório!";
+                        $this->redirect("/estoque");
                         exit;
                     }
 
@@ -125,8 +120,8 @@ class EstoqueController extends Controller
                     'empresa_id' => $_SESSION['empresa_id'],
                     'foto' => $arquivo
                 ])->execute();
-                $mensagem = "Produto cadastrado com sucesso!";
-                $this->redirect("/estoque?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Produto cadastrado com sucesso!";
+                $this->redirect("/estoque");
                 exit;
             } elseif ($acao === 'editar') {
                 Estoque::update([
@@ -141,14 +136,14 @@ class EstoqueController extends Controller
                 ])
                     ->where('id', $id)
                     ->execute();
-                $mensagem = "Produto atualizado com sucesso!";
-                $this->redirect("/estoque?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Produto atualizado com sucesso!";
+                $this->redirect("/estoque");
                 exit;
             } elseif ($acao === 'excluir') {
 
                 Estoque::delete()->where('id', $id)->execute();
-                $mensagem = "Produto excluído com sucesso!";
-                $this->redirect("/estoque?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Produto excluído com sucesso!";
+                $this->redirect("/estoque");
                 exit;
             } elseif ($acao === 'cadastrar_categoria') {
 
@@ -158,8 +153,8 @@ class EstoqueController extends Controller
                     'nome' => $categoria_nome,
                     'empresa_id' => $_SESSION['empresa_id']
                 ])->execute();
-                $mensagem = "Categoria adicionada com sucesso!";
-                $this->redirect("/estoque/categorias?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Categoria adicionada com sucesso!";
+                $this->redirect("/estoque/categorias");
                 exit;
             } elseif ($acao === 'editar_categoria') {
 
@@ -167,14 +162,14 @@ class EstoqueController extends Controller
                     'nome' => $categoria_nome
                 ])
                     ->where('id', $categoria_id)->execute();
-                $mensagem = "Categoria editada com sucesso!";
-                $this->redirect("/estoque/categorias?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Categoria editada com sucesso!";
+                $this->redirect("/estoque/categorias");
                 exit;
             } elseif ($acao === 'excluir_categoria') {
 
                 Categorias::delete()->where('id', $categoria_id)->execute();
-                $mensagem = "Categoria excluída com sucesso!";
-                $this->redirect("/estoque/categorias?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Categoria excluída com sucesso!";
+                $this->redirect("/estoque/categorias");
                 exit;
             }
         }

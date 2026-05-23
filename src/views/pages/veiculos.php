@@ -1,6 +1,8 @@
 <?= $render('header') ?>
-<?php if (!empty($mensagem)): ?>
-    <div id="aviso" class="mensagem hide"><?= $mensagem ?></div>
+<?php if (!empty($_SESSION['mensagem'])): ?>
+    <div id="aviso" class="mensagem hide">
+        <?php echo $_SESSION['mensagem'];
+        unset($_SESSION['mensagem']);  ?></div>
     <script>
         const aviso = document.getElementById('aviso');
         aviso.classList.remove('hide');
@@ -67,14 +69,23 @@
             <input type="hidden" name="acao" id="acao" value="cadastrar">
             <input type="hidden" name="veiculo_id" id="veiculo_id">
 
-            <div class="form-group">
-                <label>Cliente:</label>
-                <select name="cliente_id" id="cliente_id" required>
-                    <option value="">Selecione um cliente</option>
-                    <?php foreach ($clientes as $cliente): ?>
-                        <option value="<?= $cliente['id'] ?>"><?= htmlspecialchars($cliente['nome']) ?></option>
-                    <?php endforeach; ?>
-                </select>
+            <div class="form-group" style="flex: 2;">
+                <label>Cliente</label>
+                <div class="busca-cliente">
+                    <input type="text"
+                        id="buscar-cliente"
+                        placeholder="Nome do cliente"
+                        autocomplete="off">
+
+                    <input type="hidden"
+                        name="cliente_id"
+                        id="cliente_id"
+                        required>
+
+                    <div id="resultados-cliente"
+                        class="resultados-cliente"
+                        style="display:none;"></div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -184,6 +195,7 @@
         document.getElementById('modal-title').textContent = 'Editar Veículo';
         document.getElementById('acao').value = 'editar';
         document.getElementById('veiculo_id').value = veiculo.id;
+        document.getElementById('buscar-cliente').value = veiculo.cliente_nome;
         document.getElementById('cliente_id').value = veiculo.cliente_id;
         document.getElementById('placa').value = veiculo.placa;
         document.getElementById('marca').value = veiculo.marca;
@@ -198,5 +210,60 @@
             fecharModal();
         }
     }
+
+
+    const clientes = <?= json_encode($clientes) ?>;
+
+    const buscaCliente = document.getElementById('buscar-cliente');
+    const cliente_id = document.getElementById('cliente_id');
+    const resultadosCliente = document.getElementById('resultados-cliente');
+
+    buscaCliente.addEventListener('input', () => {
+
+        const termo = buscaCliente.value.toLowerCase();
+
+        resultadosCliente.innerHTML = '';
+
+        if (termo.length < 1) {
+            resultadosCliente.style.display = 'none';
+            return;
+        }
+
+        const filtrados = clientes.filter(c =>
+            c.nome.toLowerCase().includes(termo)
+        );
+
+        if (filtrados.length === 0) {
+            resultadosCliente.style.display = 'none';
+            return;
+        }
+
+        resultadosCliente.style.display = 'block';
+
+        filtrados.forEach(c => {
+
+            const div = document.createElement('div');
+
+            div.className = 'item-produto-busca';
+
+            div.innerHTML = `
+    <div class="produto-info">
+        <strong>${c.nome} ${c.cpf_cnpj ? ` - ${c.cpf_cnpj} -` : ''} ${c.telefone ? ` - ${c.telefone}` : ''}</strong>
+    </div>
+        `;
+
+            div.onclick = () => {
+
+                buscaCliente.value = c.nome;
+                cliente_id.value = c.id;
+
+                resultadosCliente.style.display = 'none';
+            };
+
+            resultadosCliente.appendChild(div);
+
+        });
+
+    });
 </script>
 <?= $render('footer') ?>

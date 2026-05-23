@@ -11,7 +11,7 @@ use src\models\Veiculos;
 class AgendamentosController extends Controller
 {
 
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -24,7 +24,6 @@ class AgendamentosController extends Controller
     public function index()
     {
         $filtro = filter_input(INPUT_GET, 'filtro') ?? 'Agendado';
-        $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
 
         $agendamentos = Agendamentos::select([
             'agendamentos.id',
@@ -66,7 +65,6 @@ class AgendamentosController extends Controller
             'agendamentos' => $agendamentos,
             'clientes' => $clientes,
             'veiculos' => $veiculos,
-            'mensagem' => $mensagem,
             'filtro' => $filtro
         ]);
     }
@@ -96,8 +94,8 @@ class AgendamentosController extends Controller
                     'usuario_id' => $_SESSION['usuario_id'],
                     'empresa_id' => $_SESSION['empresa_id']
                 ])->execute();
-                $mensagem = "Agendamento criado com sucesso!";
-                $this->redirect("/agendamentos?filtro={$filtro}&msg={$mensagem}");
+                $_SESSION['mensagem'] = "Agendamento criado com sucesso!";
+                $this->redirect("/agendamentos?filtro={$filtro}");
                 exit;
             } elseif ($acao === 'editar') {
                 Agendamentos::update()
@@ -108,13 +106,13 @@ class AgendamentosController extends Controller
                     ->set('observacoes', $observacoes)
                     ->set('status', $status)
                     ->where('id', $agendamento_id)->execute();
-                $mensagem = "Agendamento atualizado!";
-                $this->redirect("/agendamentos?msg=$mensagem");
+                $_SESSION['mensagem'] = "Agendamento atualizado!";
+                $this->redirect("/agendamentos");
                 exit;
             } elseif ($acao === 'excluir') {
                 Agendamentos::delete()->where('id', $agendamento_id)->execute();
-                $mensagem = "Agendamento excluído!";
-                $this->redirect("/agendamentos?msg?$mensagem");
+                $_SESSION['mensagem'] = "Agendamento excluído!";
+                $this->redirect("/agendamentos");
             }
         }
     }

@@ -16,7 +16,7 @@ use Exception;
 class ComprasController extends Controller
 {
 
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -29,7 +29,6 @@ class ComprasController extends Controller
     public function index()
     {
         if ($_SESSION['usuario_nivel'] == 'Admin' || $_SESSION['usuario_nivel'] == 'Gerente') {
-            $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
 
             $compras = Compras::select([
                 'fornecedores.nome_empresa',
@@ -46,8 +45,7 @@ class ComprasController extends Controller
             $fornecedores = Fornecedores::select()->where('empresa_id', $_SESSION['empresa_id'])->get();
             $this->render('compras', [
                 'compras' => $compras,
-                'fornecedores' => $fornecedores,
-                'mensagem' => $mensagem
+                'fornecedores' => $fornecedores
             ]);
         } else {
             $this->render('acesso_negado', []);
@@ -56,7 +54,6 @@ class ComprasController extends Controller
 
     public function compraItens($compra_id = [])
     {
-        $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
         $compra = Compras::select([
             'fornecedores.nome_empresa',
             'compras.numero_nf',
@@ -88,8 +85,7 @@ class ComprasController extends Controller
             'compra' => $compra[0],
             'produtos' => $produtos,
             'itens' => $itens,
-            'compra_id' => $compra_id['id'],
-            'mensagem' => $mensagem
+            'compra_id' => $compra_id['id']
         ]);
     }
 
@@ -129,25 +125,25 @@ class ComprasController extends Controller
                     ])->execute();
 
                     Model::commit();
-                    $mensagem = "Compra registrada com sucesso!";
-                    $this->redirect("/compras/itens/{$compra_id}&msg={$mensagem}");
+                    $_SESSION['mensagem'] = "Compra registrada com sucesso!";
+                    $this->redirect("/compras/itens/{$compra_id}");
                     exit;
                 } catch (Exception $e) {
                     Model::rollBack();
-                    $mensagem = "Erro ao registrar compra: " . $e->getMessage();
+                    $_SESSION['mensagem'] = "Erro ao registrar compra: " . $e->getMessage();
                 }
-                $this->redirect("/compras&msg={$mensagem}");
+                $this->redirect("/compras");
                 exit;
             } elseif ($acao === 'excluir') {
 
                 try {
                     Compras::delete()->where('id', $compra_id)->execute();
-                    $mensagem = "Compra excluída!";
+                    $_SESSION['mensagem'] = "Compra excluída!";
                 } catch (Exception $e) {
-                    $mensagem = "Erro ao excluir compra: Itens na lista de compras";
+                    $_SESSION['mensagem'] = "Erro ao excluir compra: Itens na lista de compras";
                 }
 
-                $this->redirect("/compras&msg={$mensagem}");
+                $this->redirect("/compras");
                 exit;
             } elseif ($acao === 'add_item') {
 
@@ -167,14 +163,14 @@ class ComprasController extends Controller
 
                 Compras::update()->set('valor_total', $total[0]['total'])->where('id', $compra_id)->execute();
 
-                $mensagem = "Item adicionado!";
-                $this->redirect("/compras/itens/{$compra_id}&msg={$mensagem}");
+                $_SESSION['mensagem'] = "Item adicionado!";
+                $this->redirect("/compras/itens/{$compra_id}");
                 exit;
             } elseif ($acao === 'remover_item') {
 
                 try {
                     Compras_itens::delete()->where('id', $item_id)->execute();
-                    $mensagem = "Item removido!";
+                    $_SESSION['mensagem'] = "Item removido!";
 
                     $total = Compras_itens::select()->addField(new Func('sum', 'valor_total'), 'total')
                         ->where('compra_id', $compra_id)->get();
@@ -182,11 +178,11 @@ class ComprasController extends Controller
 
                     Compras::update()->set('valor_total', $total)->where('id', $compra_id)->execute();
                 } catch (Exception $e) {
-                    $mensagem = "Erro ao remover item: " . $e->getMessage();
+                    $_SESSION['mensagem'] = "Erro ao remover item: " . $e->getMessage();
                 }
 
 
-                $this->redirect("/compras/itens/{$compra_id}&msg={$mensagem}");
+                $this->redirect("/compras/itens/{$compra_id}");
                 exit;
             } elseif ($acao === 'finalizar_compra') {
 
@@ -199,6 +195,7 @@ class ComprasController extends Controller
                         $produto = Estoque::select(['quantidade'])->where('id', $item['produto_id'])->get();
                         Estoque::update()
                             ->set('quantidade', $produto[0]['quantidade'] + $item['quantidade'])
+                            ->set('preco_custo', $item['valor_unitario'])
                             ->where('id', $item['produto_id'])->execute();
                     }
 
@@ -208,7 +205,7 @@ class ComprasController extends Controller
                     Caixa::insert([
                         'tipo' => 'Saida',
                         'categoria' => 'Compra de Produtos',
-                        'descricao' => 'Compra NF: ' . $compra['descricao'],
+                        'descricao' => $compra['observacoes'],
                         'valor' => $compra['valor_total'],
                         'forma_pagamento' => $compra['forma_pagamento'],
                         'compra_id' => $compra_id,
@@ -219,12 +216,12 @@ class ComprasController extends Controller
                     Compras::update()->set('status', 'Concluido')->where('id', $compra_id)->execute();
 
                     Model::commit();
-                    $mensagem = "Compra concluída! O estoque foi atualizado com sucesso.";
+                    $_SESSION['mensagem'] = "Compra concluída! O estoque foi atualizado com sucesso.";
                 } catch (Exception $e) {
                     Model::rollBack();
-                    $mensagem = "Erro ao finalizar a compra";
+                    $_SESSION['mensagem'] = "Erro ao finalizar a compra";
                 }
-                $this->redirect("/compras?msg={$mensagem}");
+                $this->redirect("/compras");
             }
         }
     }

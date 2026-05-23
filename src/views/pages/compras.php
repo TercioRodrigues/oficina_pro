@@ -1,6 +1,8 @@
 <?= $render('header') ?>
-<?php if (!empty($mensagem)): ?>
-    <div id="aviso" class="mensagem hide"><?= $mensagem ?></div>
+<?php if (!empty($_SESSION['mensagem'])): ?>
+    <div id="aviso" class="mensagem hide">
+        <?php echo $_SESSION['mensagem'];
+        unset($_SESSION['mensagem']);  ?></div>
     <script>
         const aviso = document.getElementById('aviso');
         aviso.classList.remove('hide');
@@ -93,7 +95,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Valor Total (R$):</label>
-                    <input type="number" name="valor_total" value="0,00" step="0.01" min="0">
+                    <input type="number" name="valor_total" value="0" step="0.01" min="0">
                 </div>
 
                 <div class="form-group">

@@ -11,7 +11,7 @@ use src\models\Usuarios;
 
 class UsuariosController extends Controller
 {
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -24,14 +24,12 @@ class UsuariosController extends Controller
     public function index()
     {
         if ($_SESSION['usuario_nivel'] == 'Admin' || $_SESSION['usuario_nivel'] == 'Gerente') {
-            $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
 
             $usuarios = Usuarios::select()
                 ->where('empresa_id', $_SESSION['empresa_id'])->orderBy('nome')->get();
 
             $this->render('usuarios', [
-                'usuarios' => $usuarios,
-                'mensagem' => $mensagem
+                'usuarios' => $usuarios
             ]);
         } else {
             $this->render('acesso_negado', []);
@@ -68,8 +66,8 @@ class UsuariosController extends Controller
                         'ativo' => $ativo,
                         'empresa_id' => $_SESSION['empresa_id']
                     ])->execute();
-                    $mensagem = "Usuário cadastrado com sucesso!";
-                    $this->redirect("/usuarios?msg={$mensagem}");
+                    $_SESSION['mensagem'] = "Usuário cadastrado com sucesso!";
+                    $this->redirect("/usuarios");
                     exit;
                 }
             } elseif ($acao === 'editar') {
@@ -94,24 +92,24 @@ class UsuariosController extends Controller
                         'ativo' => $ativo
                     ])->where('id', $id)->execute();
                 }
-                $mensagem = "Usuário atualizado!";
-                $this->redirect("/usuarios?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Usuário atualizado!";
+                $this->redirect("/usuarios");
                 exit;
             } elseif ($acao === 'excluir') {
                 if ($id == $_SESSION['usuario_id']) {
                     $erro = "Você não pode excluir seu próprio usuário!";
                 } else {
                     Usuarios::delete()->where('id', $id)->execute();
-                    $mensagem = "Usuário excluído!";
-                    $this->redirect("/usuarios?msg={$mensagem}");
+                    $_SESSION['mensagem'] = "Usuário excluído!";
+                    $this->redirect("/usuarios");
                     exit;
                 }
             } elseif ($acao === 'resetar_senha') {
                 $nova_senha = $this->gerarSenhaProvisoria();
                 $senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
                 Usuarios::update()->set('senha', $senha_hash)->where('id', $id)->execute();
-                $mensagem = "Senha resetada para: {$nova_senha}";
-                $this->redirect("/usuarios?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Senha resetada para: {$nova_senha}";
+                $this->redirect("/usuarios");
                 exit;
             }
         }

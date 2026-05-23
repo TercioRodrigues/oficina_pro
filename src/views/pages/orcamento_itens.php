@@ -1,6 +1,8 @@
 <?= $render('header') ?>
-<?php if (!empty($mensagem)): ?>
-    <div id="aviso" class="mensagem hide"><?= $mensagem ?></div>
+<?php if (!empty($_SESSION['mensagem'])): ?>
+    <div id="aviso" class="mensagem hide">
+        <?php echo $_SESSION['mensagem'];
+        unset($_SESSION['mensagem']);  ?></div>
     <script>
         const aviso = document.getElementById('aviso');
         aviso.classList.remove('hide');
@@ -11,9 +13,9 @@
     </script>
 <?php endif; ?>
 <div class="page-header">
-    <h1>📝 Orçamento #<?= str_pad($orcamento['id'], 4, '0', STR_PAD_LEFT) ?></h1>
+    <h1>📝 Orçamento #<?= str_pad($orcamento['orcamento_id'], 4, '0', STR_PAD_LEFT) ?></h1>
     <p class="breadcrumb">
-        <a href="orcamentos.php" style="color: #667eea;">Orçamentos</a> / Gerenciar Itens
+        <a href="/orcamentos" style="color: #667eea;">Orçamentos</a> / Gerenciar Itens
     </p>
 </div>
 
@@ -37,35 +39,65 @@
             <span class="info-value"><?= date('d/m/Y', strtotime($orcamento['data_orcamento'])) ?></span>
         </div>
     </div>
+
+    <div>
+        <?php if ($orcamento['status'] != 'Aprovado' && $orcamento['status'] != 'Expirado'): ?>
+            <form method="POST" action="/orcamentos/processar">
+                <input type="hidden" name="acao" value="editar">
+                <input type="hidden" name="os_id" value="<?= $orcamento['id'] ?>">
+                <div class="form-group">
+                    <label>Descrição do Problema:</label>
+                    <textarea name="descricao_problema" id="descricao_problema" style="width: 40%;" readonly><?= $orcamento['descricao_servico'] ?></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Observações:</label>
+                    <textarea name="observacoes" id="observacoes" style="width: 40%;" readonly><?= $orcamento['observacoes'] ?></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="btn-salvar" style="display: none;">Salvar</button>
+                <button type="button" class="btn btn-secondary" id="btn-cancelar" style="display: none;">Cancelar</button>
+            </form>
+            <button class="btn btn-primary" id="btn-editar">Editar</button>
+        <?php endif; ?>
+    </div>
 </div>
+
+
 
 <div class="card">
     <h3 style="margin-bottom: 15px;">➕ Adicionar Produto/Peça</h3>
     <form method="POST" class="form-inline" action="/orcamentos/processar">
         <input type="hidden" name="acao" value="add_produto">
         <input type="hidden" name="orcamento_id" value="<?= $orcamento['id'] ?>">
-        <div class="form-group">
-            <label>Produto do Estoque (opcional):</label>
-            <select name="produto_id" onchange="preencherProduto(this)">
-                <option value="">Selecione ou digite manualmente</option>
-                <?php foreach ($produtos_estoque as $p): ?>
-                    <option value="<?= $p['id'] ?>" data-desc="<?= htmlspecialchars($p['descricao']) ?>" data-preco="<?= $p['preco_venda'] ?>">
-                        <?= htmlspecialchars($p['descricao']) ?> - <?= $p['preco_venda'] ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
         <div class="form-group" style="flex: 2;">
-            <label>Descrição: *</label>
-            <input type="text" name="descricao" id="desc_produto" required>
+            <label>Produto:</label>
+            <div class="busca-produto">
+                <input type="text"
+                    id="buscar-produto"
+                    name="descricao"
+                    placeholder="Buscar peça por nome ou código"
+                    autocomplete="off">
+
+                <input type="hidden"
+                    name="produto_id"
+                    id="produto_id"
+                    required>
+
+                <input type="hidden"
+                    name="valor_unitario"
+                    id="produto_valor_unitario"
+                    required>
+
+                <div id="resultados-produto"
+                    class="resultados-produto"
+                    style="display:none;"></div>
+            </div>
         </div>
+
         <div class="form-group">
-            <label>Qtd: *</label>
+            <label>Quantidade:</label>
             <input type="number" name="quantidade" min="1" value="1" required>
-        </div>
-        <div class="form-group">
-            <label>Valor Unit. (R$): *</label>
-            <input type="number" name="valor_unitario" id="valor_produto" step="0.01" min="0" required>
         </div>
         <button type="submit" class="btn btn-primary">Adicionar</button>
     </form>
@@ -244,122 +276,21 @@
         <form method="POST" action="/orcamentos/processar">
             <input type="hidden" name="acao" id="acao" value="criarOs">
             <input type="hidden" name="orcamento_id" value="<?= $orcamento['id'] ?>">
-            <input type="hidden" name="cliente_id" id="cliente_id" value="">
-            <input type="hidden" name="cliente_novo" id="cliente_novo" value="Sim">
-
-            <!-- CLIENTE -->
-            <h3 style="font-size:14px;margin:10px 0 8px;border-bottom:1px solid #eee;">👤 Dados do Cliente</h3>
-
-            <div class="form-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-                <div class="form-group">
-                    <label>Nome *</label>
-                    <input type="text" name="cliente_nome" id="cliente_nome" required>
-                </div>
-
-                <div class="form-group">
-                    <label>CPF *</label>
-                    <input type="text" id="cliente_cpf" name="cliente_cpf" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Telefone *</label>
-                    <input type="text" id="cliente_telefone" name="cliente_telefone" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="cliente_email" name="cliente_email">
-                </div>
-                <div class="form-group">
-                    <label>Endereço</label>
-                    <input type="text" id="cliente_endereco" name="cliente_endereco">
-                </div>
-            </div>
 
             <!-- VEÍCULO -->
             <h3 style="font-size:14px;margin:12px 0 8px;border-bottom:1px solid #eee;">🚗 Dados do Veículo</h3>
 
             <div class="form-grid" style="display:flex;">
+
                 <div class="form-group">
-                    <label>Marca *</label>
-                    <select name="veiculo_marca" id="veiculo_marca">
-                        <option value="">Selecione uma marca</option>
-                        <option value="Audi">Audi</option>
-                        <option value="Bmw">BMW</option>
-                        <option value="Byd">BYD</option>
-                        <option value="Chery">Chery</option>
-                        <option value="Chevrolet">Chevrolet</option>
-                        <option value="Citroen">Citroën</option>
-                        <option value="Dodge">Dodge</option>
-                        <option value="Ferrari">Ferrari</option>
-                        <option value="Fiat">Fiat</option>
-                        <option value="Ford">Ford</option>
-                        <option value="Gwm">GWM</option>
-                        <option value="Honda">Honda</option>
-                        <option value="Hyundai">Hyundai</option>
-                        <option value="Jac">JAC</option>
-                        <option value="Jeep">Jeep</option>
-                        <option value="Kia">Kia</option>
-                        <option value="Land-rover">Land Rover</option>
-                        <option value="Lexus">Lexus</option>
-                        <option value="Mercedes-benz">Mercedes-Benz</option>
-                        <option value="Mitsubishi">Mitsubishi</option>
-                        <option value="Nissan">Nissan</option>
-                        <option value="Peugeot">Peugeot</option>
-                        <option value="Porsche">Porsche</option>
-                        <option value="Ram">RAM</option>
-                        <option value="Renault">Renault</option>
-                        <option value="Subaru">Subaru</option>
-                        <option value="Suzuki">Suzuki</option>
-                        <option value="Toyota">Toyota</option>
-                        <option value="Volkswagen">Volkswagen</option>
-                        <option value="Volvo">Volvo</option>
-                    </select>
+                    <label for="km_atual">Km Atual*</label>
+                    <input type="text" name="km" id="km_atual" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Modelo *</label>
-                    <input type="text" name="veiculo_modelo" id="veiculo_modelo" required>
+                    <label for="mecanico">Mecânico*</label>
+                    <input type="text" id="mecanico" name="mecanico" required>
                 </div>
-
-                <div class="form-group" style="max-width: 70px;">
-                    <label>Ano *</label>
-                    <input type="text" name="veiculo_ano" id="veiculo_ano" maxlength="4" required>
-                </div>
-
-                <div class="form-group" style="max-width: 120px;">
-                    <label>Placa</label>
-                    <input type="text" name="veiculo_placa" id="veiculo_placa">
-                </div>
-                <div class="form-group" style="max-width: 90px;">
-                    <label>KM Atual:</label>
-                    <input type="text" name="veiculo_km" id="veiculo_km">
-                </div>
-            </div>
-
-            <!-- ORÇAMENTO -->
-            <h3 style="font-size:14px;margin:12px 0 8px;border-bottom:1px solid #eee;">📋 Informações do Orçamento</h3>
-
-            <div class="form-group">
-                <label>Descrição do Serviço *</label>
-                <textarea name="descricao_servico" id="descricao_servico" rows="2" required></textarea>
-            </div>
-
-            <div class="form-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
-                <div class="form-group">
-                    <label>Data *</label>
-                    <input type="date" name="data_orcamento" id="data_orcamento">
-                </div>
-
-                <div class="form-group">
-                    <label>Validade (dias)</label>
-                    <input type="number" name="validade_dias" id="validade" value="7" min="1">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Observações</label>
-                <textarea name="observacoes" id="observacoes" rows="2"></textarea>
             </div>
 
             <!-- FOOTER -->
@@ -374,70 +305,51 @@
 
 
 <script>
+    const os_status = '<?= $orcamento['status'] ?>'
+    const btn_editar = document.getElementById('btn-editar');
+    const btn_salvar = document.getElementById('btn-salvar');
+    const btn_cancelar = document.getElementById('btn-cancelar');
+    const descricao_problema = document.getElementById('descricao_problema');
+    const observacoes = document.getElementById('observacoes');
+
+
+    if (btn_editar) {
+        btn_editar.addEventListener('click', () => {
+            btn_editar.style.display = 'none';
+            btn_salvar.style.display = 'inline-block';
+            btn_cancelar.style.display = 'inline-block';
+
+            descricao_problema.readOnly = false;
+            descricao_problema.style.background = 'aliceblue';
+
+            observacoes.readOnly = false;
+            observacoes.style.background = 'aliceblue';
+
+        });
+    }
+    if (btn_cancelar) {
+        btn_cancelar.addEventListener('click', () => {
+            btn_salvar.style.display = 'none';
+            btn_cancelar.style.display = 'none';
+            btn_editar.style.display = 'inline-block';
+
+            descricao_problema.readOnly = true;
+            descricao_problema.style.background = 'white';
+
+            observacoes.readOnly = true;
+            observacoes.style.background = 'white';
+        });
+    }
+
+
+
     function fecharModal() {
         document.getElementById('modal').style.display = 'none';
     }
 
-    function criarOs(user) {
-
-        const input_cpf = document.getElementById('cliente_cpf');
-        var cpf = '';
+    function criarOs() {
 
         document.getElementById('modal').style.display = 'block';
-
-        document.getElementById('acao').value = 'criarOs';
-
-        document.getElementById('cliente_nome').value = user.cliente_nome || '';
-        document.getElementById('cliente_cpf').value = user.cliente_cpf || '';
-        document.getElementById('cliente_telefone').value = user.cliente_telefone || '';
-        document.getElementById('cliente_email').value = user.cliente_email || '';
-        document.getElementById('cliente_endereco').value = user.cliente_endereco || '';
-        document.getElementById('veiculo_marca').value = user.veiculo_marca;
-        document.getElementById('veiculo_modelo').value = user.veiculo_modelo;
-        document.getElementById('veiculo_ano').value = user.veiculo_ano;
-        document.getElementById('veiculo_placa').value = user.veiculo_placa;
-        document.getElementById('veiculo_km').value = user.veiculo_km_atual || '';
-        document.getElementById('descricao_servico').value = user.descricao_servico;
-        document.getElementById('data_orcamento').value = user.data_orcamento;
-        document.getElementById('validade').value = user.validade_dias;
-        document.getElementById('observacoes').value = user.observacoes;
-
-        input_cpf.addEventListener('input', () => {
-
-            if (input_cpf.value.length >= 11) {
-                cpf = input_cpf.value;
-
-                if (input_cpf.value.length > 11) {
-                    cpf = input_cpf.value.replace([',', '.', '-', '_', ' ']);
-                }
-
-                fetch(`/orcamentos/procurarCliente/${cpf}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erro ao pesquisar: ' + response.status);
-                        }
-
-                        return response.json();
-                    })
-                    .then(data => {
-                        document.getElementById('cliente_id').value = data.cliente_id;
-                        document.getElementById('cliente_nome').value = data.cliente_nome;
-                        document.getElementById('cliente_cpf').value = data.cpf;
-                        document.getElementById('cliente_telefone').value = data.telefone;
-                        document.getElementById('cliente_email').value = data.email;
-                        document.getElementById('cliente_endereco').value = data.endereco || '';
-                        document.getElementById('veiculo_marca').value = data.marca;
-                        document.getElementById('veiculo_modelo').value = data.modelo;
-                        document.getElementById('veiculo_ano').value = data.ano;
-                        document.getElementById('veiculo_placa').value = data.placa;
-                        document.getElementById('cliente_novo').value = 'Nao';
-                    })
-                    .catch(Error => {
-                        console.log(Error);
-                    });
-            }
-
-        });
     }
 
     window.onclick = function(event) {
@@ -461,5 +373,77 @@
             document.getElementById('valor_servico').value = option.dataset.preco;
         }
     }
+
+
+
+    const produtos = <?= json_encode($produtos_estoque) ?>;
+
+    const buscaProduto = document.getElementById('buscar-produto');
+    const resultadosProduto = document.getElementById('resultados-produto');
+    const produtoId = document.getElementById('produto_id');
+    const produto_valor_unitario = document.getElementById('produto_valor_unitario');
+
+    buscaProduto.addEventListener('input', () => {
+
+        const termo = buscaProduto.value.toLowerCase();
+
+        resultadosProduto.innerHTML = '';
+
+        if (termo.length < 1) {
+            resultadosProduto.style.display = 'none';
+            return;
+        }
+
+        const filtrados = produtos.filter(p =>
+            p.descricao.toLowerCase().includes(termo) ||
+            p.codigo.toLowerCase().includes(termo)
+        );
+
+        if (filtrados.length === 0) {
+            resultadosProduto.style.display = 'none';
+            return;
+        }
+
+        resultadosProduto.style.display = 'block';
+
+        filtrados.forEach(p => {
+
+            const div = document.createElement('div');
+
+            div.className = 'item-produto-busca';
+
+            div.innerHTML = `
+            ${p.foto 
+        ? `<img src="/${p.foto}">` 
+        : '<span class="sem-foto-emoji">📦</span>'
+    }
+
+    <div class="produto-info">
+        <strong>${p.descricao}</strong>
+
+        <span class="produto-codigo">
+            Código: ${p.codigo}
+        </span>
+
+        <span class="produto-estoque">
+            Estoque: ${p.quantidade}
+        </span>
+    </div>
+        `;
+
+            div.onclick = () => {
+
+                buscaProduto.value = p.descricao;
+                produtoId.value = p.id;
+                produto_valor_unitario.value = p.preco_venda;
+
+                resultadosProduto.style.display = 'none';
+            };
+
+            resultadosProduto.appendChild(div);
+
+        });
+
+    });
 </script>
 <?= $render('footer') ?>

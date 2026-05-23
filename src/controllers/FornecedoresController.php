@@ -10,7 +10,7 @@ use src\models\Fornecedores;
 
 class FornecedoresController extends Controller
 {
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -23,11 +23,9 @@ class FornecedoresController extends Controller
     public function index()
     {
         if ($_SESSION['usuario_nivel'] == 'Admin' || $_SESSION['usuario_nivel'] == 'Gerente') {
-            $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
             $fornecedor = Fornecedores::select()->where('empresa_id', $_SESSION['empresa_id'])->get();
             $this->render('fornecedores', [
-                'fornecedores' => $fornecedor,
-                'mensagem' => $mensagem
+                'fornecedores' => $fornecedor
             ]);
         } else {
             $this->render('acesso_negado', []);
@@ -59,8 +57,8 @@ class FornecedoresController extends Controller
                     'produtos_fornecidos' => $produtos_fornecidos,
                     'empresa_id' => $_SESSION['empresa_id']
                 ])->execute();
-                $mensagem = "Fornecedor cadastrado com sucesso!";
-                $this->redirect("/fornecedores?msg=$mensagem");
+                $_SESSION['mensagem'] = "Fornecedor cadastrado com sucesso!";
+                $this->redirect("/fornecedores");
                 exit;
             } elseif ($acao === 'editar') {
                 Fornecedores::update([
@@ -73,14 +71,14 @@ class FornecedoresController extends Controller
                     'produtos_fornecidos' => $produtos_fornecidos,
                     'empresa_id' => $_SESSION['empresa_id']
                 ])->execute();
-                $mensagem = "Fornecedor atualizado com sucesso!";
-                $this->redirect("/fornecedores?msg=$mensagem");
+                $_SESSION['mensagem'] = "Fornecedor atualizado com sucesso!";
+                $this->redirect("/fornecedores");
                 exit;
             } elseif ($acao === 'excluir') {
 
                 Fornecedores::delete()->where('id', $id)->execute();
-                $mensagem = "Fornecedor excluído com sucesso!";
-                $this->redirect("/fornecedores?msg=$mensagem");
+                $_SESSION['mensagem'] = "Fornecedor excluído com sucesso!";
+                $this->redirect("/fornecedores");
                 exit;
             }
         }

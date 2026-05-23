@@ -13,7 +13,7 @@ use src\models\Os_itens_servicos;
 
 class VeiculosController extends Controller
 {
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -25,8 +25,6 @@ class VeiculosController extends Controller
 
     public function index()
     {
-        $mensagem = filter_input(INPUT_GET, 'msg');
-
         $veiculos = Veiculos::select([
             'veiculos.id',
             'veiculos.marca',
@@ -46,7 +44,6 @@ class VeiculosController extends Controller
 
         $this->render('veiculos', [
             'veiculos' => $veiculos,
-            'mensagem' => $mensagem,
             'clientes' => $clientes
         ]);
     }
@@ -116,8 +113,8 @@ class VeiculosController extends Controller
                     'cor' => $cor,
                     'empresa_id' => $_SESSION['empresa_id']
                 ])->execute();
-                $mensagem = "Veículo cadastrado com sucesso!";
-                $this->redirect("/veiculos?msg=$mensagem");
+                $_SESSION['mensagem'] = "Veículo cadastrado com sucesso!";
+                $this->redirect("/veiculos");
                 exit;
             } elseif ($acao === 'editar') {
 
@@ -132,16 +129,18 @@ class VeiculosController extends Controller
                         ->set('cor', $cor)->where('id', $veiculo_id)->execute();
                     $mensagem = "Veículo atualizado com sucesso!";
                 } catch (Exception $e) {
-                    echo "Erro ao atualizar: " . $e->getMessage();
+                    $mensagem = "Erro ao atualizar: " . $e->getMessage();
                 }
 
-                $this->redirect("/veiculos?msg=$mensagem");
+                $_SESSION['mensagem'] = $mensagem;
+
+                $this->redirect("/veiculos");
                 exit;
             } elseif ($acao === 'excluir') {
 
                 Veiculos::delete()->where('id', $veiculo_id)->execute();
-                $mensagem = "Veículo excluído com sucesso!";
-                $this->redirect("/veiculos?msg=$mensagem");
+                $_SESSION['mensagem'] = "Veículo excluído com sucesso!";
+                $this->redirect("/veiculos");
                 exit;
             }
         }

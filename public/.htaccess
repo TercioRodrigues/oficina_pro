@@ -5,3 +5,19 @@ RewriteCond %{REQUEST_FILENAME} !-l
 RewriteRule ^(.*)$ index.php?request=$1 [QSA,L]
 #Acesso restrito ao diretorio
 Options All -Indexes
+
+<Files "service-worker.js">
+    Header set Cache-Control "no-store, no-cache, must-revalidate"
+    Header set Pragma "no-cache"
+</Files>
+
+<FilesMatch "\.(html|php|js|css)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</FilesMatch>
+
+# Imagens podem cachear normalmente
+<FilesMatch "\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2)$">
+    Header set Cache-Control "public, max-age=31536000"
+</FilesMatch>

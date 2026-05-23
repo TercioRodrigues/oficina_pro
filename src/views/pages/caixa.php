@@ -1,6 +1,8 @@
 <?= $render('header') ?>
-<?php if (!empty($mensagem)): ?>
-    <div id="aviso" class="mensagem hide"><?= $mensagem ?></div>
+<?php if (!empty($_SESSION['mensagem'])): ?>
+    <div id="aviso" class="mensagem hide">
+        <?php echo $_SESSION['mensagem'];
+        unset($_SESSION['mensagem']);  ?></div>
     <script>
         const aviso = document.getElementById('aviso');
         aviso.classList.remove('hide');
@@ -89,15 +91,15 @@
                         <?= $mov['tipo'] === 'Entrada' ? '+' : '-' ?> R$ <?= number_format($mov['valor'], 2, ',', '.') ?>
                     </td>
                     <td>
-                        <?php if (!$mov['os_id'] && !$mov['compra_id']): ?>
-                            <form method="POST" action="/caixa/processar" style="display: inline;">
+
+                        <!-- <form method="POST" action="/caixa/processar" style="display: inline;">
                                 <input type="hidden" name="acao" value="excluir">
                                 <input type="hidden" name="id" value="<?= $mov['id'] ?>">
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Excluir este lançamento?')">Excluir</button>
-                            </form>
-                        <?php else: ?>
-                            <span style="color: #999; font-size: 0.9em;">Automático</span>
-                        <?php endif; ?>
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Excluir este lançamento?')">Excluir</button> -->
+                        </form>
+
+                        <span style="color: #999; font-size: 0.9em;">Automático</span>
+
                     </td>
                 </tr>
             <?php endforeach; ?>

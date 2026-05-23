@@ -1,6 +1,8 @@
 <?= $render('header') ?>
-<?php if (!empty($mensagem)): ?>
-    <div id="aviso" class="mensagem hide"><?= $mensagem ?></div>
+<?php if (!empty($_SESSION['mensagem'])): ?>
+    <div id="aviso" class="mensagem hide">
+        <?php echo $_SESSION['mensagem'];
+        unset($_SESSION['mensagem']);  ?></div>
     <script>
         const aviso = document.getElementById('aviso');
         aviso.classList.remove('hide');
@@ -47,7 +49,7 @@
         <tbody>
             <?php foreach ($ordens as $ordem): ?>
                 <tr style="cursor: pointer;" onclick="window.location.href='/Os/itens?os_id=<?= $ordem['id'] ?>';">
-                    <td>#<?= str_pad($ordem['id'], 5, '0', STR_PAD_LEFT) ?></td>
+                    <td>#<?= str_pad($ordem['os_id'], 5, '0', STR_PAD_LEFT) ?></td>
                     <td><?= htmlspecialchars($ordem['cliente_nome']) ?></td>
                     <td><?= htmlspecialchars($ordem['marca'] . ' ' . $ordem['modelo'] . ' - ' . $ordem['placa']) ?></td>
                     <td><?= date('d/m/Y', strtotime($ordem['data_abertura'])) ?></td>
@@ -91,25 +93,28 @@
             <input type="hidden" name="id" id="ordem-id">
 
             <div class="form-row">
-                <div class="form-group">
-                    <label>Cliente:</label>
-                    <select name="cliente_id" id="cliente_id" required>
-                        <option value="">Selecione</option>
-                        <?php foreach ($clientes as $cliente): ?>
-                            <option value="<?= $cliente['id'] ?>"><?= htmlspecialchars($cliente['nome']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                <div class="form-group" style="flex: 2;">
+                    <label>Cliente</label>
+                    <div class="busca-cliente">
+                        <input type="text"
+                            id="buscar-cliente"
+                            placeholder="Nome do cliente"
+                            autocomplete="off">
+
+                        <input type="hidden"
+                            name="cliente_id"
+                            id="cliente_id"
+                            required>
+
+                        <div id="resultados-cliente"
+                            class="resultados-cliente"
+                            style="display:none;"></div>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label>Veículo:</label>
                     <select name="veiculo_id" id="veiculo_id" required>
-                        <option value="">Selecione</option>
-                        <?php foreach ($veiculos as $veiculo): ?>
-                            <option value="<?= $veiculo['id'] ?>">
-                                <?= htmlspecialchars($veiculo['cliente_nome'] . ' - ' . $veiculo['marca'] . ' ' . $veiculo['modelo'] . ' (' . $veiculo['placa'] . ')') ?>
-                            </option>
-                        <?php endforeach; ?>
                     </select>
                 </div>
 
@@ -156,7 +161,6 @@
         document.getElementById('modal-title').textContent = 'Nova Ordem de Serviço';
         document.getElementById('acao').value = 'cadastrar';
         document.querySelector('form').reset();
-        document.getElementById('data_abertura').value = '<?= date('Y-m-d') ?>';
     }
 
     function fecharModal() {
@@ -168,6 +172,91 @@
         if (event.target === modal) {
             fecharModal();
         }
+    }
+
+
+    const clientes = <?= json_encode($clientes) ?>;
+
+    const buscaCliente = document.getElementById('buscar-cliente');
+    const cliente_id = document.getElementById('cliente_id');
+    const resultadosCliente = document.getElementById('resultados-cliente');
+
+    buscaCliente.addEventListener('input', () => {
+
+        const termo = buscaCliente.value.toLowerCase();
+
+        resultadosCliente.innerHTML = '';
+
+        if (termo.length < 1) {
+            resultadosCliente.style.display = 'none';
+            return;
+        }
+
+        const filtrados = clientes.filter(c =>
+            c.nome.toLowerCase().includes(termo)
+        );
+
+        if (filtrados.length === 0) {
+            resultadosCliente.style.display = 'none';
+            return;
+        }
+
+        resultadosCliente.style.display = 'block';
+
+        filtrados.forEach(c => {
+
+            const div = document.createElement('div');
+
+            div.className = 'item-produto-busca';
+
+            div.innerHTML = `
+    <div class="produto-info">
+        <strong>${c.nome} ${c.cpf_cnpj ? ` - ${c.cpf_cnpj} -` : ''} ${c.telefone ? ` - ${c.telefone}` : ''}</strong>
+    </div>
+        `;
+
+            div.onclick = () => {
+
+                buscaCliente.value = c.nome;
+                cliente_id.value = c.id;
+
+                resultadosCliente.style.display = 'none';
+                buscarVeiculo(c.id);
+            };
+
+            resultadosCliente.appendChild(div);
+
+        });
+
+    });
+
+    function buscarVeiculo(cliente_id) {
+        fetch(`/Os/cliente/${cliente_id}/buscarveiculo`)
+            .then(response => {
+                if (!response.ok) throw new Error(response.status);
+                return response.json();
+            })
+            .then(data => {
+
+                const select = document.getElementById('veiculo_id');
+                const option = document.createElement('option');
+
+                option.innerText = 'Selecione..';
+                select.appendChild(option);
+
+                data.veiculos.forEach(v => {
+
+                    const option = document.createElement('option');
+
+                    option.value = v.id;
+                    option.innerText = `${v.marca} - ${v.modelo} - ${v.placa}`;
+                    select.appendChild(option);
+
+                });
+            })
+            .catch(Error => {
+                console.error(Error);
+            });
     }
 </script>
 <?= $render('footer') ?>

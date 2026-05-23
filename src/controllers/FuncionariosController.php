@@ -9,7 +9,7 @@ use src\models\Funcionarios;
 
 class FuncionariosController extends Controller
 {
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -22,7 +22,7 @@ class FuncionariosController extends Controller
     public function index()
     {
         if ($_SESSION['usuario_nivel'] == 'Admin' || $_SESSION['usuario_nivel'] == 'Gerente') {
-            $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
+
             $filtro_status = filter_input(INPUT_GET, 'status') ?? 'Ativo';
 
             if ($filtro_status == 'Todos') {
@@ -37,7 +37,6 @@ class FuncionariosController extends Controller
             }
 
             $this->render('funcionarios', [
-                'mensagem' => $mensagem,
                 'filtro_status' => $filtro_status,
                 'funcionarios' => $funcionarios
             ]);
@@ -85,8 +84,8 @@ class FuncionariosController extends Controller
                     'empresa_id' => $_SESSION['empresa_id']
                 ])->execute();
 
-                $mensagem = "Funcionário cadastrado com sucesso!";
-                $this->redirect("/funcionarios?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Funcionário cadastrado com sucesso!";
+                $this->redirect("/funcionarios");
                 exit;
             } elseif ($acao === 'editar') {
 
@@ -105,13 +104,13 @@ class FuncionariosController extends Controller
                     'endereco' => $endereco,
                     'observacoes' => $observacoes
                 ])->where('id', $id)->execute();
-                $mensagem = "Funcionário atualizado!";
-                $this->redirect("/funcionarios?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Funcionário atualizado!";
+                $this->redirect("/funcionarios");
                 exit;
             } elseif ($acao === 'excluir') {
                 Funcionarios::delete()->where('id', $id)->execute();
-                $mensagem = "Funcionário excluído!";
-                $this->redirect("/funcionarios?msg={$mensagem}");
+                $_SESSION['mensagem'] = "Funcionário excluído!";
+                $this->redirect("/funcionarios");
                 exit;
             }
         }

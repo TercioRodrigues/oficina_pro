@@ -3,6 +3,7 @@
 namespace src\controllers;
 
 use \core\Controller;
+use Exception;
 use \src\models\Login;
 use src\models\Empresas;
 
@@ -22,12 +23,11 @@ class ConfiguracoesController extends Controller
     public function index()
     {
         if ($_SESSION['usuario_nivel'] == 'Admin' || $_SESSION['usuario_nivel'] == 'Gerente') {
-            $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
+
             $empresa = Empresas::select()->where('id', $_SESSION['empresa_id'])->get();
             $empresa = $empresa[0];
             $this->render('configuracoes', [
-                'config' => $empresa,
-                'mensagem' => $mensagem
+                'config' => $empresa
             ]);
         } else {
             $this->render('acesso_negado', []);
@@ -77,8 +77,84 @@ class ConfiguracoesController extends Controller
 
             $_SESSION['empresa_nome'] = $nome_fantasia;
 
-            $mensagem = "Configurações atualizadas com sucesso!";
-            $this->redirect("/configuracoes?msg={$mensagem}");
+            $_SESSION['mensagem'] = "Configurações atualizadas com sucesso!";
+            $this->redirect("/configuracoes");
         }
+    }
+
+    public function uploadLogo()
+    {
+        try {
+            if (!empty($_FILES['logo']['name'])) {
+
+                $logoAtual = Empresas::select(['logo'])->where('id', $_SESSION['empresa_id'])->get();
+                if (!empty($logoAtual[0])) {
+
+                    if (is_file($logoAtual[0]['logo'])) {
+                        if (unlink($logoAtual[0]['logo']))
+                            throw new Exception('Erro ao remover logo');
+                    }
+                }
+
+                if ($_FILES['logo']['error'] > 0) {
+                    $_SESSION['mensagem'] = "Erro ao enviar a logo!";
+                    $this->redirect("/configuracoes");
+                    exit;
+                }
+
+                $diretorio = "Arquivos/" . $_SESSION['empresa_razao_social'] . "/upload";
+
+                if (!is_dir($diretorio))
+                    if (!mkdir($diretorio, 0777, true)) {
+                        $_SESSION['mensagem'] = "Erro ao criar diretório!";
+                        $this->redirect("/configuracoes");
+                        exit;
+                    }
+
+                $nome = time() . '_' . $_FILES['logo']['name'];
+
+                move_uploaded_file(
+                    $_FILES['logo']['tmp_name'],
+                    $diretorio . $nome
+                );
+
+                $arquivo = $diretorio . $nome;
+
+                Empresas::update([
+                    'logo' => $arquivo
+                ])->where('id', $_SESSION['empresa_id'])->execute();
+
+                $_SESSION['empresa_logo'] = $arquivo;
+
+                $mensagem = 'Logo salva com sucesso!';
+            }
+        } catch (Exception $e) {
+            $mensagem = $e->getMessage();
+        }
+
+        $_SESSION['mensagem'] = $mensagem ?? '';
+        $this->redirect('/configuracoes');
+    }
+
+    public function removerLogo()
+    {
+        try {
+            $logoAtual = Empresas::select(['logo'])->where('id', $_SESSION['empresa_id'])->get();
+            if (!empty($logoAtual[0])) {
+
+                if (is_file($logoAtual[0]['logo'])) {
+                    if (!unlink($logoAtual[0]['logo']))
+                        throw new Exception('Erro ao remover logo');
+                    Empresas::update(['logo' => null])->where('id', $_SESSION['empresa_id'])->execute();
+                    unset($_SESSION['empresa_logo']);
+                }
+            }
+            $mensagem = 'Logo removida com sucesso!';
+        } catch (Exception $e) {
+            $mensagem = $e->getMessage();
+        }
+
+        $_SESSION['mensagem'] = $mensagem;
+        $this->redirect('/configuracoes');
     }
 }

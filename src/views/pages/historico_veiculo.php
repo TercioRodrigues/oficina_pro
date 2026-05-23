@@ -51,7 +51,7 @@
                     <div class="stat-label">Valor Total Gasto</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value"><?= number_format($veiculo['km_atual'], 0, '.', '.') ?> km</div>
+                    <div class="stat-value"><?= empty($veiculo['km_atual']) ? '0' : number_format($veiculo['km_atual'], 0, '.', '.') ?> km</div>
                     <div class="stat-label">Quilometragem Atual</div>
                 </div>
                 <div class="stat-card">

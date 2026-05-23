@@ -20,8 +20,10 @@ $pagina_atual = str_replace('/', '', $pagina_atual);
     <!-- Topbar -->
 
     <div class="topbar">
-        <a href="/" class="topbar-brand">
-            <span>🔧</span>
+        <a href="/" class="topbar-brand" style="height: 60px">
+            <?php if (isset($_SESSION['empresa_logo'])): ?>
+                <img src="/<?= $_SESSION['empresa_logo'] ?>" alt="logo" style="height: 100%">
+            <?php endif; ?>
             <span><?= $_SESSION['empresa_nome'] ?></span>
         </a>
 
@@ -35,133 +37,135 @@ $pagina_atual = str_replace('/', '', $pagina_atual);
                     <div class="user-nivel"><?= $_SESSION['usuario_nivel'] ?></div>
                 </div>
             </div>
-            <a href="/logout" class="btn-logout">🚪 Sair</a>
+            <a href="/logout" class="btn-logout">🚪 <span class="logout-text">Sair</span></a>
         </div>
     </div>
 
     <!-- Navbar -->
     <nav class="navbar">
-        <ul class="navbar-menu">
-            <li class="navbar-item">
-                <a href="/dashboard" class="navbar-link <?= $pagina_atual === 'dashboard' ? 'active' : '' ?>">
-                    <span class="navbar-icon">📊</span>
-                    <span>Dashboard</span>
-                </a>
-            </li>
+        <div class="navbar-scroll">
+            <ul class="navbar-menu">
+                <li class="navbar-item">
+                    <a href="/dashboard" class="navbar-link <?= $pagina_atual === 'dashboard' ? 'active' : '' ?>">
+                        <span class="navbar-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
 
-            <li class="navbar-item">
-                <a href="#" class="navbar-link">
-                    <span class="navbar-icon">📋</span>
-                    <span>Atendimento</span>
-                    <span style="margin-left: 5px;">▼</span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="/orcamentos" class="dropdown-item <?= $pagina_atual === 'orcamentos' || $pagina_atual === 'orcamento_itens' ? 'active' : '' ?>">
-                            <span class="dropdown-icon">📝</span>
-                            <span>Orçamentos</span>
-                        </a></li>
-                    <li><a href="/Os" class="dropdown-item <?= $pagina_atual === 'Os' || $pagina_atual === "Ositens?os_id=" . substr($pagina_atual, strpos($pagina_atual, '=') + 1, strlen($pagina_atual)) ? 'active' : '' ?>">
-                            <span class="dropdown-icon">📋</span>
-                            <span>Ordens de Serviço</span>
-                        </a></li>
-                    <li><a href="/agendamentos" class="dropdown-item <?= $pagina_atual === 'agendamentos' ? 'active' : '' ?>">
-                            <span class="dropdown-icon">📅</span>
-                            <span>Agendamentos</span>
-                        </a></li>
-                    <li><a href="/garantias" class="dropdown-item <?= $pagina_atual === 'garantias' || $pagina_atual === "garantias?status=" . substr($pagina_atual, strpos($pagina_atual, '=') + 1, strlen($pagina_atual)) ? 'active' : '' ?>">
-                            <span class="dropdown-icon">🛡️</span>
-                            <span>Garantias</span>
-                        </a></li>
-                </ul>
-            </li>
+                <li class="navbar-item">
+                    <a href="#" class="navbar-link">
+                        <span class="navbar-icon">📋</span>
+                        <span>Atendimento</span>
+                        <span style="margin-left: 5px;">▼</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/orcamentos" class="dropdown-item <?= $pagina_atual === 'orcamentos' || $pagina_atual === 'orcamento_itens' ? 'active' : '' ?>">
+                                <span class="dropdown-icon">📝</span>
+                                <span>Orçamentos</span>
+                            </a></li>
+                        <li><a href="/Os" class="dropdown-item <?= $pagina_atual === 'Os' || $pagina_atual === "Ositens?os_id=" . substr($pagina_atual, strpos($pagina_atual, '=') + 1, strlen($pagina_atual)) ? 'active' : '' ?>">
+                                <span class="dropdown-icon">📋</span>
+                                <span>Ordens de Serviço</span>
+                            </a></li>
+                        <li><a href="/agendamentos" class="dropdown-item <?= $pagina_atual === 'agendamentos' ? 'active' : '' ?>">
+                                <span class="dropdown-icon">📅</span>
+                                <span>Agendamentos</span>
+                            </a></li>
+                        <li><a href="/garantias" class="dropdown-item <?= $pagina_atual === 'garantias' || $pagina_atual === "garantias?status=" . substr($pagina_atual, strpos($pagina_atual, '=') + 1, strlen($pagina_atual)) ? 'active' : '' ?>">
+                                <span class="dropdown-icon">🛡️</span>
+                                <span>Garantias</span>
+                            </a></li>
+                    </ul>
+                </li>
 
-            <li class="navbar-item">
-                <a href="#" class="navbar-link">
-                    <span class="navbar-icon">👥</span>
-                    <span>Cadastros</span>
-                    <span style="margin-left: 5px;">▼</span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="/clientes" class="dropdown-item <?= $pagina_atual === 'clientes' ? 'active' : '' ?>">
-                            <span class="dropdown-icon">👥</span>
-                            <span>Clientes</span>
-                        </a></li>
-                    <li><a href="/veiculos" class="dropdown-item <?= $pagina_atual === 'veiculos' ? 'active' : '' ?>">
-                            <span class="dropdown-icon">🚗</span>
-                            <span>Veículos</span>
-                        </a></li>
-                    <li><a href="/servicos" class="dropdown-item <?= $pagina_atual === 'servicos' ? 'active' : '' ?>">
-                            <span class="dropdown-icon">🔨</span>
-                            <span>Serviços</span>
-                        </a></li>
-                    <li><a href="/fornecedores" class="dropdown-item <?= $pagina_atual === 'fornecedores' ? 'active' : '' ?>">
-                            <span class="dropdown-icon">🏢</span>
-                            <span>Fornecedores</span>
-                        </a></li>
-                </ul>
-            </li>
+                <li class="navbar-item">
+                    <a href="#" class="navbar-link">
+                        <span class="navbar-icon">👥</span>
+                        <span>Cadastros</span>
+                        <span style="margin-left: 5px;">▼</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/clientes" class="dropdown-item <?= $pagina_atual === 'clientes' ? 'active' : '' ?>">
+                                <span class="dropdown-icon">👥</span>
+                                <span>Clientes</span>
+                            </a></li>
+                        <li><a href="/veiculos" class="dropdown-item <?= $pagina_atual === 'veiculos' ? 'active' : '' ?>">
+                                <span class="dropdown-icon">🚗</span>
+                                <span>Veículos</span>
+                            </a></li>
+                        <li><a href="/servicos" class="dropdown-item <?= $pagina_atual === 'servicos' ? 'active' : '' ?>">
+                                <span class="dropdown-icon">🔨</span>
+                                <span>Serviços</span>
+                            </a></li>
+                        <li><a href="/fornecedores" class="dropdown-item <?= $pagina_atual === 'fornecedores' ? 'active' : '' ?>">
+                                <span class="dropdown-icon">🏢</span>
+                                <span>Fornecedores</span>
+                            </a></li>
+                    </ul>
+                </li>
 
-            <li class="navbar-item">
-                <a href="#" class="navbar-link">
-                    <span class="navbar-icon">📦</span>
-                    <span>Estoque</span>
-                    <span style="margin-left: 5px;">▼</span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="/estoque" class="dropdown-item <?= $pagina_atual === 'estoque' ? 'active' : '' ?>">
-                            <span class="dropdown-icon">📦</span>
-                            <span>Produtos</span>
-                        </a></li>
-                    <li><a href="/compras" class="dropdown-item <?= $pagina_atual === 'compras' || $pagina_atual === 'compras_itens' ? 'active' : '' ?>">
-                            <span class="dropdown-icon">🛒</span>
-                            <span>Compras</span>
-                        </a></li>
-                </ul>
-            </li>
+                <li class="navbar-item">
+                    <a href="#" class="navbar-link">
+                        <span class="navbar-icon">📦</span>
+                        <span>Estoque</span>
+                        <span style="margin-left: 5px;">▼</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/estoque" class="dropdown-item <?= $pagina_atual === 'estoque' ? 'active' : '' ?>">
+                                <span class="dropdown-icon">📦</span>
+                                <span>Produtos</span>
+                            </a></li>
+                        <li><a href="/compras" class="dropdown-item <?= $pagina_atual === 'compras' || $pagina_atual === 'compras_itens' ? 'active' : '' ?>">
+                                <span class="dropdown-icon">🛒</span>
+                                <span>Compras</span>
+                            </a></li>
+                    </ul>
+                </li>
 
-            <li class="navbar-item">
-                <a href="/caixa" class="navbar-link <?= $pagina_atual === 'caixa' ? 'active' : '' ?>">
-                    <span class="navbar-icon">💰</span>
-                    <span>Caixa</span>
-                </a>
-            </li>
+                <li class="navbar-item">
+                    <a href="/caixa" class="navbar-link <?= $pagina_atual === 'caixa' ? 'active' : '' ?>">
+                        <span class="navbar-icon">💰</span>
+                        <span>Caixa</span>
+                    </a>
+                </li>
 
-            <li class="navbar-item">
-                <a href="/funcionarios" class="navbar-link <?= $pagina_atual === 'funcionarios' ? 'active' : '' ?>">
-                    <span class="navbar-icon">👷</span>
-                    <span>Funcionários</span>
-                </a>
-            </li>
+                <li class="navbar-item">
+                    <a href="/funcionarios" class="navbar-link <?= $pagina_atual === 'funcionarios' ? 'active' : '' ?>">
+                        <span class="navbar-icon">👷</span>
+                        <span>Funcionários</span>
+                    </a>
+                </li>
 
-            <li class="navbar-item">
-                <a href="#" class="navbar-link">
-                    <span class="navbar-icon">⚙️</span>
-                    <span>Configurações</span>
-                    <span style="margin-left: 5px;">▼</span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a href="/configuracoes" class="dropdown-item <?= $pagina_atual === 'configuracoes' ? 'active' : '' ?>">
-                            <span class="dropdown-icon">🏢</span>
-                            <span>Empresa</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/usuarios" class="dropdown-item <?= $pagina_atual === 'usuarios' ? 'active' : '' ?>">
-                            <span class="dropdown-icon">🔐</span>
-                            <span>Usuários</span>
-                        </a>
-                    </li>
-                    <li class="dropdown-divider"></li>
-                    <li>
-                        <a href="#" class="dropdown-item" onclick="window.open('/painel', '', 'fullscreen=yes')">
-                            <span class="dropdown-icon">📺</span>
-                            <span>Painel Cliente</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+                <li class="navbar-item">
+                    <a href="#" class="navbar-link">
+                        <span class="navbar-icon">⚙️</span>
+                        <span>Configurações</span>
+                        <span style="margin-left: 5px;">▼</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/configuracoes" class="dropdown-item <?= $pagina_atual === 'configuracoes' ? 'active' : '' ?>">
+                                <span class="dropdown-icon">🏢</span>
+                                <span>Empresa</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/usuarios" class="dropdown-item <?= $pagina_atual === 'usuarios' ? 'active' : '' ?>">
+                                <span class="dropdown-icon">🔐</span>
+                                <span>Usuários</span>
+                            </a>
+                        </li>
+                        <li class="dropdown-divider"></li>
+                        <li>
+                            <a href="#" class="dropdown-item" onclick="window.open('/painel', '', 'fullscreen=yes')">
+                                <span class="dropdown-icon">📺</span>
+                                <span>Painel Cliente</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </nav>
 
     <!-- Main Content -->

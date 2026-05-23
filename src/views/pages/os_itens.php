@@ -1,6 +1,8 @@
 <?= $render('header') ?>
-<?php if (!empty($mensagem)): ?>
-    <div id="aviso" class="mensagem hide"><?= $mensagem ?></div>
+<?php if (!empty($_SESSION['mensagem'])): ?>
+    <div id="aviso" class="mensagem hide">
+        <?php echo $_SESSION['mensagem'];
+        unset($_SESSION['mensagem']);  ?></div>
     <script>
         const aviso = document.getElementById('aviso');
         aviso.classList.remove('hide');
@@ -13,7 +15,7 @@
 <div class="header">
     <div style="display: flex; justify-content: space-between; align-items: start;">
         <div>
-            <h1>📋 Ordem de Serviço #<?= str_pad($os['id'], 5, '0', STR_PAD_LEFT) ?></h1>
+            <h1>📋 Ordem de Serviço #<?= str_pad($os['os_id'], 5, '0', STR_PAD_LEFT) ?></h1>
             <?php if ($os['status'] === 'Em_Andamento') $class = 'badge-andamento';
 
             elseif ($os['status'] === 'Aberta') $class = 'badge-aberta';
@@ -46,9 +48,8 @@
 
         </div>
         <div>
-            <?php if ($os['status'] == 'Concluido'): ?>
-                <a href="/Os/imprimir/<?= $os['id'] ?>" target="_blank" class="btn btn-primary" style="margin-left: 10px;">🖨️ Imprimir OS</a>
-            <?php endif; ?>
+            <a href="/Os/imprimir/<?= $os['id'] ?>" target="_blank" class="btn btn-primary" style="margin-left: 10px;">🖨️ Imprimir OS</a>
+
             <?php if ($os['status'] == 'Cancelado'): ?>
                 <form method="POST" style="display: inline;" action="/Os/processar">
                     <input type="hidden" name="acao" value="excluir">

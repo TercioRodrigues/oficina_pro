@@ -1,7 +1,7 @@
 </main>
 
-<div id="toastContainer"></div>
-
+<div class="toast-container" id="toastContainer"></div>
+<script src="/assets/js/dropdown.js"></script>
 <script>
     const APP_VERSION = '<?= VERSAO ?>';
 </script>

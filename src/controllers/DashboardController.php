@@ -12,7 +12,7 @@ use src\models\Agendamentos;
 class DashboardController extends Controller
 {
 
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();

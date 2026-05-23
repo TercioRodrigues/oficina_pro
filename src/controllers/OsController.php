@@ -4,25 +4,26 @@ namespace src\controllers;
 
 use \core\Controller;
 use \core\Model;
+use ClanCats\Hydrahon\Query\Sql\Func;
+use Exception;
+use src\models\Agendamentos;
+use src\models\Caixa;
+use src\models\Clientes;
+use src\models\Contadores;
+use src\models\Empresas;
+use src\models\Estoque;
+use src\models\Garantias;
 use src\models\Login;
 use src\models\Ordens_servico;
-use src\models\Veiculos;
-use src\models\Clientes;
-use src\models\Estoque;
 use src\models\Os_itens_produtos;
 use src\models\Os_itens_servicos;
 use src\models\Servicos;
-use ClanCats\Hydrahon\Query\Sql\Func;
-use src\models\Caixa;
-use src\models\Empresas;
-use src\models\Garantias;
-use Exception;
-use src\models\Agendamentos;
+use src\models\Veiculos;
 
 class OsController extends Controller
 {
 
-    private $UsuarioLogado;
+    private bool $UsuarioLogado;
     public function __construct()
     {
         $this->UsuarioLogado = Login::verificarLogin();
@@ -34,7 +35,6 @@ class OsController extends Controller
 
     public function index()
     {
-        $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
         $filtro = filter_input(INPUT_GET, 'status') ?? 'Aberta';
         $ordens = Ordens_servico::select([
             'ordens_servico.id',
@@ -42,6 +42,7 @@ class OsController extends Controller
             'ordens_servico.status',
             'ordens_servico.valor_total',
             'ordens_servico.pago',
+            'ordens_servico.os_id',
             'clientes.nome as cliente_nome',
             'veiculos.placa',
             'veiculos.marca',
@@ -57,23 +58,9 @@ class OsController extends Controller
 
         $clientes = Clientes::select()->where('empresa_id', $_SESSION['empresa_id'])->orderBy('nome')->get();
 
-        $veiculos = Veiculos::select([
-            'veiculos.id',
-            'veiculos.placa',
-            'veiculos.marca',
-            'veiculos.ano',
-            'veiculos.modelo',
-            'clientes.nome as cliente_nome'
-        ])
-            ->join('clientes', 'veiculos.cliente_id', '=', 'clientes.id')
-            ->where('veiculos.empresa_id', $_SESSION['empresa_id'])
-            ->orderBy('clientes.nome')->get();
-
         $this->render('ordens', [
             'ordens' => $ordens,
             'clientes' => $clientes,
-            'veiculos' => $veiculos,
-            'mensagem' => $mensagem,
             'status_filtro' => $filtro
         ]);
     }
@@ -81,7 +68,6 @@ class OsController extends Controller
     public function osItens()
     {
         $os_id = filter_input(INPUT_GET, 'os_id');
-        $mensagem = filter_input(INPUT_GET, 'msg') ?? '';
 
         $os = Ordens_servico::select([
             'ordens_servico.id',
@@ -94,6 +80,7 @@ class OsController extends Controller
             'ordens_servico.descricao_problema',
             'ordens_servico.observacoes',
             'ordens_servico.pago',
+            'ordens_servico.os_id',
             'clientes.nome as cliente_nome',
             'veiculos.placa',
             'veiculos.marca',
@@ -131,8 +118,8 @@ class OsController extends Controller
             ->join('servicos', 'os_itens_servicos.servico_id', '=', 'servicos.id')
             ->where('os_itens_servicos.os_id', $os_id)->get();
 
-        $produtos = Estoque::select()->where('quantidade', '>', 0)->orderBy('descricao')->get();
-        $servicos = Servicos::select()->orderBy('nome')->get();
+        $produtos = Estoque::select()->where('quantidade', '>', 0)->where('empresa_id', $_SESSION['empresa_id'])->orderBy('descricao')->get();
+        $servicos = Servicos::select()->where('empresa_id', $_SESSION['empresa_id'])->orderBy('nome')->get();
 
 
         $this->render('os_itens', [
@@ -140,8 +127,7 @@ class OsController extends Controller
             'produtos_os' => $itens_produtos,
             'servicos_os' => $itens_servicos,
             'produtos' => $produtos,
-            'servicos' => $servicos,
-            'mensagem' => $mensagem
+            'servicos' => $servicos
         ]);
     }
 
@@ -149,6 +135,8 @@ class OsController extends Controller
     {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+
             $acao = filter_input(INPUT_POST, 'acao') ?? '';
             $os_id = filter_input(INPUT_POST, 'os_id');
 
@@ -173,56 +161,113 @@ class OsController extends Controller
 
             if ($acao === 'cadastrar') {
 
-                $os_id = Ordens_servico::insert([
-                    'cliente_id' => $cliente_id,
-                    'veiculo_id' => $veiculo_id,
-                    'data_abertura' => $data_abertura,
-                    'status' => $status,
-                    'descricao_problema' => $descricao_problema,
-                    'observacoes' => $obsercacoes,
-                    'valor_total' => $valor_total,
-                    'usuario_id' => $_SESSION['usuario_id'],
-                    'empresa_id' => $_SESSION['empresa_id'],
-                    'mecanico_nome' => $mecanico,
-                    'km_veiculo' => $km_atual
-                ])->execute();
+                Model::beginTransaction();
 
-                Veiculos::update(['km_atual' => $km_atual])->where('id', $veiculo_id)->execute();
+                $ultima_os = Contadores::select()->where('empresa_id', $_SESSION['empresa_id'])->get();
+                $ultima_os = $ultima_os[0]['ultima_os'] + 1;
 
-                $mensagem = "Ordem de serviço cadastrada com sucesso!";
+                try {
 
-                if (!empty($agendamento_id)) {
-                    Agendamentos::update()
-                        ->set('os_id', $os_id)
-                        ->set('status', 'Concluido')
-                        ->where('id', $agendamento_id)->execute();
-                    $this->redirect("/Os/itens?os_id=$os_id&msg=$mensagem");
-                    exit;
+                    $os_id = Ordens_servico::insert([
+                        'cliente_id' => $cliente_id,
+                        'veiculo_id' => $veiculo_id,
+                        'data_abertura' => $data_abertura,
+                        'status' => $status,
+                        'descricao_problema' => $descricao_problema,
+                        'observacoes' => $obsercacoes,
+                        'valor_total' => $valor_total,
+                        'usuario_id' => $_SESSION['usuario_id'],
+                        'empresa_id' => $_SESSION['empresa_id'],
+                        'mecanico_nome' => $mecanico,
+                        'km_veiculo' => $km_atual,
+                        'os_id' => $ultima_os
+                    ])->execute();
+
+                    Veiculos::update(['km_atual' => $km_atual])->where('empresa_id', $_SESSION['empresa_id'])->where('id', $veiculo_id)->execute();
+
+                    Contadores::update([
+                        'ultima_os' => $ultima_os
+                    ])->where('empresa_id', $_SESSION['empresa_id'])->execute();
+
+                    $mensagem = "Ordem de serviço cadastrada com sucesso!";
+
+                    if (!empty($agendamento_id)) {
+                        Agendamentos::update()
+                            ->set('os_id', $os_id)
+                            ->set('status', 'Concluido')
+                            ->where('id', $agendamento_id)->execute();
+                    }
+                    Model::commit();
+                } catch (Exception $e) {
+                    Model::rollBack();
+                    $mensagem = $e->getMessage();
                 }
 
-                $this->redirect("/Os?msg=$mensagem");
-                exit;
+                if (!empty($agendamento_id)) {
+                    $_SESSION['mensagem'] = $mensagem;
+                    $this->redirect("/Os/itens?os_id=$os_id");
+                    exit;
+                } else {
+                    $_SESSION['mensagem'] = $mensagem;
+                    $this->redirect("/Os");
+                    exit;
+                }
             } elseif ($acao === 'editar') {
                 Ordens_servico::update()
                     ->set('descricao_problema', $descricao_problema)
                     ->set('observacoes', $obsercacoes)->where('id', $os_id)->execute();
 
-                $mensagem = "Ordem de serviço atualizada com sucesso!";
-                $this->redirect("/Os/itens?os_id=$os_id&msg=$mensagem");
+                $_SESSION['mensagem'] = "Ordem de serviço atualizada com sucesso!";
+                $this->redirect("/Os/itens?os_id=$os_id");
                 exit;
             } elseif ($acao === 'editar_status') {
                 Ordens_servico::update()
                     ->set('status', $status)->where('id', $os_id)->execute();
 
-                $mensagem = "Status atualizado com sucesso!";
-                $this->redirect("/Os/itens?os_id=$os_id&msg=$mensagem");
+                $_SESSION['mensagem'] = "Status atualizado com sucesso!";
+                $this->redirect("/Os/itens?os_id=$os_id");
                 exit;
             } elseif ($acao === 'excluir') {
-                Ordens_servico::delete()->where('id', $os_id)->execute();
-                $mensagem = "Ordem de serviço excluída com sucesso!";
-                $this->redirect("/Os?msg=$mensagem");
-            } elseif ($acao === 'add_produto') {
 
+                $os = Ordens_servico::select(['ordens_servico.valor_total', 'clientes.nome', 'os_id', 'forma_pagamento', 'pago'])
+                    ->join('clientes', 'ordens_servico.cliente_id', '=', 'clientes.id')->where('ordens_servico.id', $os_id)->get();
+                $cliente = $os[0]['nome'];
+                $valor_total = $os[0]['valor_total'];
+
+                if ($os[0]['pago'] == 'Sim') {
+                    $osId = str_pad($os[0]['os_id'], 5, '0', STR_PAD_LEFT);
+
+                    Caixa::insert([
+                        'tipo' => 'Saida',
+                        'categoria' => 'Servicos',
+                        'descricao' => "OS #{$osId} Cancelada - {$cliente}",
+                        'valor' => $valor_total,
+                        'forma_pagamento' => $os[0]['forma_pagamento'],
+                        'os_id' => $os_id,
+                        'usuario_id' => $_SESSION['usuario_id'],
+                        'data_movimentacao' => date('Y-m-d'),
+                        'empresa_id' => $_SESSION['empresa_id']
+                    ])->execute();
+
+
+                    $produtos = Os_itens_produtos::select(['produto_id', 'quantidade'])->where('os_id', $os_id)->get();
+
+                    // Restaura estoque
+                    foreach ($produtos as $prod) {
+
+                        $estoque = Estoque::select(['quantidade'])->where('id', $prod['produto_id'])->get();
+
+                        $restaura = $estoque[0]['quantidade'] + $prod['quantidade'];
+
+                        Estoque::update()
+                            ->set('quantidade', $restaura)->where('id', $prod['produto_id'])->execute();
+                    }
+                }
+
+                Ordens_servico::delete()->where('id', $os_id)->execute();
+                $_SESSION['mensagem'] = "Ordem de serviço excluída com sucesso!";
+                $this->redirect("/Os");
+            } elseif ($acao === 'add_produto') {
 
                 $produto = Estoque::select(['preco_venda'])->where('id', $produto_id)->get();
                 $valor_unitario = $produto[0]['preco_venda'];
@@ -238,8 +283,8 @@ class OsController extends Controller
                     'valor_total' => $valor_total
                 ])->execute();
 
-                $mensagem = "Produto adicionado com sucesso!";
-                $this->redirect("/Os/itens?os_id=$os_id&msg=$mensagem");
+                $_SESSION['mensagem'] = "Produto adicionado com sucesso!";
+                $this->redirect("/Os/itens?os_id=$os_id");
                 exit;
             } elseif ($acao === 'add_servico') {
 
@@ -256,19 +301,19 @@ class OsController extends Controller
                     'valor_total' => $valor_total
                 ])->execute();
 
-                $mensagem = "Serviço adicionado com sucesso!";
-                $this->redirect("/Os/itens?os_id=$os_id&msg=$mensagem");
+                $_SESSION['mensagem'] = "Serviço adicionado com sucesso!";
+                $this->redirect("/Os/itens?os_id=$os_id");
             } elseif ($acao === 'remover_produto') {
 
                 Os_itens_produtos::delete()->where('id', $item_id)->execute();
-                $mensagem = "Produto removido!";
-                $this->redirect("/Os/itens?os_id=$os_id&msg=$mensagem");
+                $_SESSION['mensagem'] = "Produto removido!";
+                $this->redirect("/Os/itens?os_id=$os_id");
                 exit;
             } elseif ($acao === 'remover_servico') {
 
                 Os_itens_servicos::delete()->where('id', $item_id)->execute();
-                $mensagem = "Serviço removido!";
-                $this->redirect("/Os/itens?os_id=$os_id&msg=$mensagem");
+                $_SESSION['mensagem'] = "Serviço removido!";
+                $this->redirect("/Os/itens?os_id=$os_id");
                 exit;
             } elseif ($acao === 'finalizar_os') {
 
@@ -301,15 +346,17 @@ class OsController extends Controller
 
 
 
-                    $os = Ordens_servico::select(['ordens_servico.valor_total', 'clientes.nome'])
+                    $os = Ordens_servico::select(['ordens_servico.valor_total', 'clientes.nome', 'os_id'])
                         ->join('clientes', 'ordens_servico.cliente_id', '=', 'clientes.id')->where('ordens_servico.id', $os_id)->get();
                     $cliente = $os[0]['nome'];
                     $valor_total = $os[0]['valor_total'];
 
+                    $osId = str_pad($os[0]['os_id'], 5, '0', STR_PAD_LEFT);
+
                     Caixa::insert([
                         'tipo' => 'Entrada',
                         'categoria' => 'Servicos',
-                        'descricao' => "OS $ {$os_id} - {$cliente}",
+                        'descricao' => "OS #{$osId} - {$cliente}",
                         'valor' => $valor_total,
                         'forma_pagamento' => $forma_pagamento,
                         'os_id' => $os_id,
@@ -376,7 +423,9 @@ class OsController extends Controller
                     Model::rollBack();
                     $mensagem = "Erro ao finalizar OS: " . $e->getMessage();
                 }
-                $this->redirect("/Os/itens?os_id=$os_id&msg=$mensagem");
+
+                $_SESSION['mensagem'] = $mensagem;
+                $this->redirect("/Os/itens?os_id=$os_id");
                 exit;
             } elseif ($acao === 'atualizar_valores') {
 
@@ -394,8 +443,8 @@ class OsController extends Controller
                     ->set('desconto', $desconto)
                     ->set('valor_total', $valor_total)->where('id', $os_id)->execute();
 
-                $mensagem = "Valores atualizados!";
-                $this->redirect("/Os/itens?os_id=$os_id&msg=$mensagem");
+                $_SESSION['mensagem'] = "Valores atualizados!";
+                $this->redirect("/Os/itens?os_id=$os_id");
             }
         }
     }
@@ -412,8 +461,9 @@ class OsController extends Controller
             'ordens_servico.valor_servicos',
             'ordens_servico.desconto',
             'ordens_servico.valor_total',
+            'ordens_servico.os_id',
             'clientes.nome as cliente_nome',
-            'clientes.cpf',
+            'clientes.cpf_cnpj',
             'clientes.telefone',
             'clientes.endereco',
             'veiculos.placa',
@@ -459,5 +509,24 @@ class OsController extends Controller
             'produtos_os' => $produtos_os,
             'servicos_os' => $servicos_os
         ]);
+    }
+
+    public function buscarVeiculo(array $cliente_id)
+    {
+
+        header('Content-Type: application/json');
+        try {
+            if (empty($cliente_id))
+                throw new Exception('Campo vazio, preencha todos os campos para continuar');
+
+            $veiculos = Veiculos::select()->where('cliente_id', $cliente_id['id'])->get();
+            echo json_encode([
+                'veiculos' => $veiculos
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'erro' => $e->getMessage()
+            ]);
+        }
     }
 }
