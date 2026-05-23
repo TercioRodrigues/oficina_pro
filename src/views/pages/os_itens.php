@@ -48,7 +48,7 @@
 
         </div>
         <div>
-            <a href="/Os/imprimir/<?= $os['id'] ?>" target="_blank" class="btn btn-primary" style="margin-left: 10px;">🖨️ Imprimir OS</a>
+            <button onclick="imprimir(<?= $os['id'] ?>);" class="btn btn-primary" style="margin-left: 10px;">🖨️ Imprimir OS</button>
 
             <?php if ($os['status'] == 'Cancelado'): ?>
                 <form method="POST" style="display: inline;" action="/Os/processar">
@@ -433,5 +433,18 @@
         });
 
     });
+
+    function imprimir(os_id) {
+        const largura = window.innerWidth * 0.7;
+        const altura = window.innerHeight * 0.7;
+        const left = (window.innerWidth - largura) / 2;
+        const top = (window.innerHeight - altura) / 2;
+
+        window.open(
+            `/Os/imprimir/${os_id}`,
+            '_blank',
+            `width=${largura},height=${altura},left=${left},top=${top}`
+        );
+    }
 </script>
 <?= $render('footer') ?>

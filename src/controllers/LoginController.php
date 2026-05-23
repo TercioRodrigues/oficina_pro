@@ -32,10 +32,8 @@ class LoginController extends Controller
 
     public function logout()
     {
-        if (Login::verificarLogin()) {
-            session_unset();
-            session_destroy();
-        }
+        session_unset();
+        session_destroy();
         $this->redirect('/login');
     }
 }

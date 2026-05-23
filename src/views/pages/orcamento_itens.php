@@ -247,9 +247,8 @@
 </div>
 
 <div style="text-align: center; margin-top: 30px;">
-    <a href="/orcamentos/imprimir/<?= $orcamento['id'] ?>" class="btn btn-success" target="_blank" style="padding: 15px 40px; font-size: 1.1em;">
-        🖨️ Imprimir Orçamento
-    </a>
+    <button onclick="imprimir(<?= $orcamento['id'] ?>);" class="btn btn-success" style="padding: 15px 40px; font-size: 1.1em;">🖨️ Imprimir Orçamento</button>
+    
     <a href="/orcamentos" class="btn btn-secondary" style="padding: 15px 40px; font-size: 1.1em;">
         ← Voltar
     </a>
@@ -445,5 +444,18 @@
         });
 
     });
+
+    function imprimir(id) {
+        const largura = window.innerWidth * 0.7;
+        const altura = window.innerHeight * 0.7;
+        const left = (window.innerWidth - largura) / 2;
+        const top = (window.innerHeight - altura) / 2;
+
+        window.open(
+            `/orcamentos/imprimir/${id}`,
+            '_blank',
+            `width=${largura},height=${altura},left=${left},top=${top}`
+        );
+    }
 </script>
 <?= $render('footer') ?>

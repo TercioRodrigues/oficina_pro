@@ -33,6 +33,7 @@ class CaixaController extends Controller
                     ->where('data_movimentacao', '>=', $data_inicio)
                     ->where('data_movimentacao', '<=', $data_fim)
                     ->where('tipo', $tipo_filtro)
+                    ->where('empresa_id', $_SESSION['empresa_id'])
                     ->orderBy('data_movimentacao', 'DESC')
                     ->orderBy('id', 'DESC')
                     ->get();
@@ -40,6 +41,7 @@ class CaixaController extends Controller
                 $movimentacoes = Caixa::select()
                     ->where('data_movimentacao', '>=', $data_inicio)
                     ->where('data_movimentacao', '<=', $data_fim)
+                    ->where('empresa_id', $_SESSION['empresa_id'])
                     ->orderBy('data_movimentacao', 'DESC')
                     ->orderBy('id', 'DESC')
                     ->get();
@@ -49,14 +51,18 @@ class CaixaController extends Controller
                 ->addField(new Func('sum', 'valor'), 'valor')
                 ->where('data_movimentacao', '>=', $data_inicio)
                 ->where('data_movimentacao', '<=', $data_fim)
-                ->where('tipo', 'Entrada')->get();
+                ->where('tipo', 'Entrada')
+                ->where('empresa_id', $_SESSION['empresa_id'])
+                ->get();
             $total_entradas = $total_entradas[0]['valor'] ?? 0.00;
 
             $total_saidas = Caixa::select()
                 ->addField(new Func('sum', 'valor'), 'valor')
                 ->where('data_movimentacao', '>=', $data_inicio)
                 ->where('data_movimentacao', '<=', $data_fim)
-                ->where('tipo', 'Saida')->get();
+                ->where('tipo', 'Saida')
+                ->where('empresa_id', $_SESSION['empresa_id'])
+                ->get();
             $total_saidas = $total_saidas[0]['valor'] ?? 0.00;
 
             $saldo = $total_entradas - $total_saidas;

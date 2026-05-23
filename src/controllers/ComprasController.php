@@ -169,12 +169,12 @@ class ComprasController extends Controller
             } elseif ($acao === 'remover_item') {
 
                 try {
-                    Compras_itens::delete()->where('id', $item_id)->execute();
+                    Compras_itens::delete()->where('id', $item_id)->where('compra_id', $compra_id)->execute();
                     $_SESSION['mensagem'] = "Item removido!";
 
                     $total = Compras_itens::select()->addField(new Func('sum', 'valor_total'), 'total')
                         ->where('compra_id', $compra_id)->get();
-                    $total = $total[0]['total'];
+                    $total = $total[0]['total'] ?? 0;
 
                     Compras::update()->set('valor_total', $total)->where('id', $compra_id)->execute();
                 } catch (Exception $e) {

@@ -33,6 +33,13 @@
             <button type="submit" class="btn-login">Entrar no Sistema</button>
         </form>
     </div>
+    <script>
+        history.pushState(null, null, location.href);
+
+        window.onpopstate = function() {
+            history.go(1);
+        };
+    </script>
 </body>
 
 </html>

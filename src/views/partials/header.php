@@ -37,7 +37,7 @@ $pagina_atual = str_replace('/', '', $pagina_atual);
                     <div class="user-nivel"><?= $_SESSION['usuario_nivel'] ?></div>
                 </div>
             </div>
-            <a href="/logout" class="btn-logout">🚪 <span class="logout-text">Sair</span></a>
+            <button class="btn-logout" onclick="window.location.replace('/logout')" style="cursor: pointer;">🚪 <span class="logout-text">Sair</span></button>
         </div>
     </div>
 
