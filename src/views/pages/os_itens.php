@@ -435,7 +435,7 @@
     });
 
     function imprimir(os_id) {
-        const largura = window.innerWidth * 0.7;
+        const largura = window.innerWidth * 0.5;
         const altura = window.innerHeight * 0.7;
         const left = (window.innerWidth - largura) / 2;
         const top = (window.innerHeight - altura) / 2;

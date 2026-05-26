@@ -98,7 +98,7 @@ class ComprasController extends Controller
             $numero_nf = filter_input(INPUT_POST, 'numero_nf');
             $data_compra = filter_input(INPUT_POST, 'data_compra');
             $valor_total = filter_input(INPUT_POST, 'valor_total') ?? 0.00;
-            $observacoes = filter_input(INPUT_POST, 'observacoes');
+            $observacoes = filter_input(INPUT_POST, 'descricao');
             $forma_pagamento = filter_input(INPUT_POST, 'forma_pagamento');
             $compra_id = filter_input(INPUT_POST, 'compra_id');
 
@@ -136,17 +136,52 @@ class ComprasController extends Controller
                 exit;
             } elseif ($acao === 'excluir') {
 
+                Model::beginTransaction();
+
                 try {
+                    $compra_itens = Compras_itens::select()
+                        ->where('compra_id', $compra_id)
+                        ->get();
+
+                    foreach ($compra_itens as $item) {
+                        $produto = Estoque::select(['quantidade'])
+                            ->where('id', $item['produto_id'])
+                            ->get();
+
+                        Estoque::update()
+                            ->set('quantidade', $produto[0]['quantidade'] - $item['quantidade'])
+                            ->where('id', $item['produto_id'])->execute();
+                    }
+
+                    $compra = Compras::select()
+                    ->where('id', $compra_id)
+                    ->where('empresa_id', $_SESSION['empresa_id'])
+                    ->get();
+                    $compra = $compra[0];
+
+                    Caixa::insert([
+                        'tipo' => 'Entrada',
+                        'categoria' => 'Compra de Produtos',
+                        'descricao' => "Compra cancelada - " . $compra['observacoes'],
+                        'valor' => $compra['valor_total'],
+                        'forma_pagamento' => $compra['forma_pagamento'],
+                        'compra_id' => $compra_id,
+                        'data_movimentacao' => date('Y-m-d'),
+                        'empresa_id' => $_SESSION['empresa_id']
+                    ])->execute();
+
                     Compras::delete()->where('id', $compra_id)->execute();
+
+                    Model::commit();
                     $_SESSION['mensagem'] = "Compra excluída!";
                 } catch (Exception $e) {
+                    Model::rollBack();
                     $_SESSION['mensagem'] = "Erro ao excluir compra: Itens na lista de compras";
                 }
 
                 $this->redirect("/compras");
                 exit;
             } elseif ($acao === 'add_item') {
-
 
                 $valor_total = $quantidade * $valor_unitario;
 

@@ -47,7 +47,7 @@
                             <form method="POST" style="display: inline;" action="/compras/processar">
                                 <input type="hidden" name="acao" value="excluir">
                                 <input type="hidden" name="compra_id" value="<?= $compra['id'] ?>">
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Excluir esta compra?')">Excluir</button>
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Ao excluir, você estará removendo a resposição do estoque, deseja continuar?')">Excluir</button>
                             </form>
                         </div>
                     </td>
@@ -94,11 +94,6 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>Valor Total (R$):</label>
-                    <input type="number" name="valor_total" value="0" step="0.01" min="0">
-                </div>
-
-                <div class="form-group">
                     <label>Forma de Pagamento:</label>
                     <select name="forma_pagamento" required>
                         <option value="">Selecione</option>
@@ -113,12 +108,12 @@
             </div>
 
             <div class="form-group">
-                <label>Observações:</label>
-                <textarea name="observacoes"></textarea>
+                <label>Descrição da compra</label>
+                <input type="text" name="descricao" id="descricao">
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button type="submit" class="btn btn-primary">Salvar e Adicionar Itens</button>
+                <button type="submit" class="btn btn-primary">Continuar</button>
                 <button type="button" class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
             </div>
         </form>
